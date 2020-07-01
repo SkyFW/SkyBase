@@ -1,2 +1,2 @@
 # SkyBase
-this is the base of whole Sky framework
+this is the base of the whole Sky framework
