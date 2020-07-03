@@ -1,11 +1,13 @@
 package org.skyfw.base.datamodel;
 
 import org.skyfw.base.datamodel.annotation.DataModel;
+/**
 
+*/
 @DataModel
-public class TBaseDataModel implements TDataModel {
+public abstract class TBaseDataModel implements TDataModel {
 
-    // >>> Default fields for any DataModel
+    // >>> Default fields for any DataModel(timestamps)
     Long creationTimeStamp;
     Long lastAccessTimeStamp;
     Long lastUpdateTimeStamp;
