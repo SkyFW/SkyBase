@@ -1,7 +1,9 @@
 package org.skyfw.base.datamodel;
 
 import org.skyfw.base.datamodel.annotation.DataModel;
+/**
 
+*/
 @DataModel
 public class TBaseDataModel implements TDataModel {
 
