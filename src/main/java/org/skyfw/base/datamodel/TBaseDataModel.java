@@ -5,7 +5,7 @@ import org.skyfw.base.datamodel.annotation.DataModel;
 @DataModel
 public class TBaseDataModel implements TDataModel {
 
-    // >>> Default fields for any DataModel
+    // >>> Default fields for any DataModel(timestamps)
     Long creationTimeStamp;
     Long lastAccessTimeStamp;
     Long lastUpdateTimeStamp;
