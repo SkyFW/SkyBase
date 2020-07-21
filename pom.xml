@@ -6,7 +6,7 @@
 
     <groupId>org.skyfw</groupId>
     <artifactId>skybase</artifactId>
-    <version>1.73.25-SNAPSHOT</version>
+    <version>1.73.26-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
