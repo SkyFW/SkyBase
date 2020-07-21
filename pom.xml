@@ -141,12 +141,14 @@
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <!-- ☛ Last Check On: 2019/7/4 ☕ -->
-            <version>2.9.9</version>
-        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+         <dependency>
+             <groupId>com.fasterxml.jackson.core</groupId>
+             <artifactId>jackson-databind</artifactId>
+             <!-- ☛ Last Check On: 2020/7/21 ☕ -->
+             <version>2.11.1</version>
+         </dependency>
+
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -271,6 +273,15 @@
             <artifactId>annotations</artifactId>
             <version>19.0.0</version>
         </dependency>
+             
+             
+         <!-- https://mvnrepository.com/artifact/javafx/javafx -->
+         <dependency>
+             <groupId>javafx</groupId>
+             <artifactId>javafx</artifactId>
+             <version>2.2.7</version>
+         </dependency>
+
 
 
 
