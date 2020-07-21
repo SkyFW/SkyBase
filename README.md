@@ -1,7 +1,5 @@
 # SkyBase
 
-[![Build Status](https://travis-ci.org/{ORG-or-USERNAME}/{REPO-NAME}.png?branch=master)](https://travis-ci.org/{ORG-or-USERNAME}/{REPO-NAME})
-
-[![Actions Status](https://github.com/{owner}/{repo}/workflows/{maven-publish}/badge.svg)](https://github.com/{owner}/{repo}/actions)
+[![Actions Status](https://github.com/SkyFW/SkyBase/workflows/{maven%20publish}/badge.svg)](https://github.com/SkyFW/SkyBase/actions)
 
 this is the base of the whole Sky framework
