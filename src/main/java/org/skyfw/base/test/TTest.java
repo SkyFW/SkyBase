@@ -7,18 +7,17 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.skyfw.base.collection.TCollection;
 import org.skyfw.base.datamodel.*;
-import org.skyfw.base.datamodel.exception.TDataModelIndexParamInitException;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.init.TBaseInitiator;
 import org.skyfw.base.log.TLogger;
-import org.skyfw.base.mcodes.TMCodeRegistry;
 import org.skyfw.base.mcodes.TMCodeSeverity;
+import org.skyfw.base.result.TResult;
 import org.skyfw.base.serializing.TGenericType;
 import org.skyfw.base.security.TDataAccessType;
 import org.skyfw.base.serializing.TSerializable;
 import org.skyfw.base.serializing.TSerializer;
 import org.skyfw.base.serializing.adapters.json.gson.TGsonAdapter;
-import org.skyfw.base.service.TRequestMetaData;
+import org.skyfw.base.service.TServiceRequestSession;
 import org.skyfw.base.service.TResponseMetaData;
 import org.skyfw.base.service.TService;
 import org.skyfw.base.service.TServiceMethod;
@@ -78,8 +77,16 @@ public class TTest {
     public static void main(String[] args) {
         logger = TLogger.getLogger();
 
+
+
         try {
+            TDataSet_Test.doTest();
+            TThreadPool_Tester.doTest();
+
             TResponseMetaData_Tester.doTest();
+
+
+            //TLogger.defaultLogFilePrinter= new THtmlLogPrinter(...);
 
           /*
             TDataModelInitiator.init(TDataModelIndexParamInitException.class);
@@ -94,16 +101,16 @@ public class TTest {
             TBaseInitiator.init();
 
 
-            TResponseMetaData responseMetaData = new TResponseMetaData(TBaseMCode.BAD_ARGUMENT, TMCodeSeverity.ERROR);
-            responseMetaData.setDetails(new HashMap<>());
+            /*TResult result = new TResult(TBaseMCode.LOCAL_ARGS_CHECK_FAILED, TMCodeSeverity.ERROR);
+            result.get(new HashMap<>());
             //responseMetaData.setMCode(TBaseMCode.LOCAL_INTERNAL_ERROR);
-            responseMetaData.getDetails().put("Count", 999);
-            responseMetaData.getDetails().put("Name", "dfgdfg");
+            result.getDetails().put("Count", 999);
+            result.getDetails().put("Name", "dfgdfg");
             String json = responseMetaData.serializeToString(TGsonAdapter.class);
 
             TResponseMetaData responseMetaData2=
                     TSerializer.deserializeFromString(json, TGsonAdapter.class, TResponseMetaData.class);
-            System.out.println(responseMetaData2);
+            System.out.println(responseMetaData2);*/
 
 
         }catch (TException e){
@@ -155,7 +162,8 @@ public class TTest {
             Type type = TypeToken.getParameterized(TTestClass.class, new Class[]{}).getType();
             testClass2 = gson.fromJson(json, type);
 
-            testClass2 = TSerializer.deserializeFromString(json, TGsonAdapter.class, TTestClass.class);
+
+            //testClass2 = TSerializer.deserializeFromString(json, TGsonAdapter.class, TTestClass.class);
 
             genericDataModel2 = TSerializer.deserializeFromString(json2, TGsonAdapter.class, TGenericDataModel.class);
 
@@ -233,9 +241,9 @@ public class TTest {
 
             TInterfaceProxy.main(null);
 
-            TRequestMetaData requestMetaData = new TRequestMetaData();
+            TServiceRequestSession requestMetaData = new TServiceRequestSession();
             requestMetaData.setRequestPath("/AAA/BBB");
-            requestMetaData.getServicePath();
+            requestMetaData.getRequestPath();
 
 
         /*try {

@@ -1,14 +1,19 @@
 package org.skyfw.base.test;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import org.skyfw.base.collection.TDataTreeSet;
 import org.skyfw.base.datamodel.*;
 import org.skyfw.base.datamodel.exception.TDataModelInitializationException;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.message.TGenericResponse;
+import org.skyfw.base.serializing.TSerializer;
 import org.skyfw.base.serializing.adapters.json.gson.TGsonAdapter;
 import org.skyfw.base.test.datamodels.TTestMessage;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Spliterator;
@@ -26,7 +31,7 @@ public class TDataSet_Test {
         }
 
 
-        TTestMessage models[] = new TTestMessage[100];
+        TTestMessage models[] = new TTestMessage[10];
         for (int i = 0; i < models.length; i++) {
             models[i] = new TTestMessage();
             models[i].setMessageId(((Long)(long)new Random().nextInt(1000)).toString());
@@ -102,6 +107,21 @@ public class TDataSet_Test {
         dataSet.sortBy("editTime");
 
 
+        String json= TSerializer.serializeToString(dataSet, TGsonAdapter.class);
+
+
+
+
+
+
+
+
+
+        TDataSet<TTestMessage> dataSet3= TSerializer.deserializeFromString(json, TGsonAdapter.class
+                , TDataSet.class, TTestMessage.class);
+        System.out.println(dataSet3.size());
+
+
         try {
             dataSet.serializeToTextFile(new File("TestDataSet.txt"), TGsonAdapter.class);
         }catch (TException e){
@@ -111,6 +131,7 @@ public class TDataSet_Test {
         try {
             TDataSet oldDataSet= new TDataSet(new TTestMessage[]{});
             oldDataSet.deserializeFromTextFile(new File("TestDataSet.txt"), TTestMessage.class);
+            System.out.println(oldDataSet.size());
         } catch (TException e){
 
         }
@@ -140,6 +161,7 @@ public class TDataSet_Test {
         Long lll= models[0].getFieldValueAsLong("x");
 
         System.out.println(System.currentTimeMillis());
+        //dataSet.seek("creationTime", 40000l, 50000l).toDataSet();
         TDataSet ds1 = dataSet.search("creationTime", 40000l, 50000l).toDataSet();
         ds1= ds1.search("messageText", "Alex1").toDataSet();
         System.out.println(System.currentTimeMillis());

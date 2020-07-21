@@ -146,7 +146,7 @@ public class TObjectPool<T extends TPoolable> implements Allocator<T>  {
         T newPoolMember= createNewPoolMember();
         try {
             newPoolMember.setMotherPool(this);
-            newPoolMember.init(this.poolMembersConfig);
+            newPoolMember.config(this.poolMembersConfig);
         }catch (TPoolableInitException e){
             e.log();
             return null;

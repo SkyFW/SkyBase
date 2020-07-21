@@ -1,6 +1,6 @@
 package org.skyfw.base.serializing.adapters.json;
 
-import org.skyfw.base.pool.TPoolConfig;
+import org.skyfw.base.pool.TBasePoolConfig;
 
-public class TJsonSerializerConfig implements TPoolConfig {
+public class TJsonSerializerConfig extends TBasePoolConfig {
 }

@@ -1,4 +1,4 @@
-package org.skyfw.base.service.async;
+package org.skyfw.base.thread.async;
 
 public class TAsyncTaskRunner {
 

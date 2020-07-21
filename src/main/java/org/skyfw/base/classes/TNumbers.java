@@ -13,7 +13,7 @@ public class TNumbers {
         Class clazz= number.getClass();
 
         if ( ! Number.class.isAssignableFrom(clazz))
-            throw TIllegalArgumentException.create(TIllegalArgumentMCode.ARGUMENT_MUST_BE_NUMERIC);
+            throw new TIllegalArgumentException(TIllegalArgumentMCode.ARGUMENT_MUST_BE_NUMERIC, "number");
 
         if ( (clazz.equals(Float.class)) || (clazz.equals(Double.class)) )
             return true;
@@ -32,12 +32,18 @@ public class TNumbers {
 
     public static <T extends Number> T create(Object object, Class<T> clazz) throws TIllegalArgumentException {
 
-        if (object.getClass().equals(String.class)){
+        if ( ! Number.class.isAssignableFrom(clazz))
+            throw new TIllegalArgumentException(TIllegalArgumentMCode.ARGUMENT_MUST_BE_A_NUMERIC_CLASS, "clazz");
 
-            if (((String) object).indexOf(".") > 0)
-                object= new Double((String) object);
-            else
-                object= new Long((String) object);
+        if (object.getClass().equals(String.class)){
+            try {
+                if (((String) object).indexOf(".") > 0)
+                    object= new Double((String) object);
+                else
+                    object= new Long((String) object);
+            } catch (Throwable e){
+                throw new TIllegalArgumentException(TIllegalArgumentMCode.STRING_ARGUMENT_MUST_BE_CONVERTABLE_TO_NUMERIC, "object");
+            }
         }
 
         if (isDecimal((Number) object)){
@@ -81,7 +87,7 @@ public class TNumbers {
             }
         }
 
-        throw TIllegalArgumentException.create(TIllegalArgumentMCode.ARGUMENT_MUST_BE_NUMERIC);
+        throw new TIllegalArgumentException(TIllegalArgumentMCode.ARGUMENT_MUST_BE_NUMERIC, "object");
     }
 
 }

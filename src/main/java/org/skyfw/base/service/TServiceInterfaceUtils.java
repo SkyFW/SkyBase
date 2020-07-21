@@ -43,7 +43,7 @@ public class TServiceInterfaceUtils {
             throws TServiceInformationRetrievalException, TIllegalArgumentException {
 
         if (serviceMethodObj == null)
-            throw TNullArgException.create(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceMethodObj");
+            throw new TNullArgException(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceMethodObj");
 
         //TException.create(TServiceMCodes.SERVICE_METHOD_INSTANCE_IS_NULL, null, e);
 
@@ -79,7 +79,7 @@ public class TServiceInterfaceUtils {
             throws TServiceInformationRetrievalException, TIllegalArgumentException {
 
         if (serviceClass == null)
-            throw TNullArgException.create(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceClass");
+            throw new TNullArgException(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceClass");
 
         try {
             TService serviceObj = TInterfaceProxy.getProxyInstance(serviceClass);
@@ -102,7 +102,7 @@ public class TServiceInterfaceUtils {
             throws TServiceInformationRetrievalException, TIllegalArgumentException{
 
         if (serviceObj == null)
-            throw TNullArgException.create(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceObj");
+            throw new TNullArgException (TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceObj");
 
         TServiceInfo serviceInfo= new TServiceInfo();
         try{

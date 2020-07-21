@@ -25,7 +25,7 @@ public class TDataModelHelper {
         // >>> For sake of performance
         /*TPreconditions.checkArgForNotNull(dataModel, "dataModel");*/
         if (dataModel == null)
-            throw TNullArgException.create("dataModel");
+            throw new TNullArgException("dataModel");
 
         TDataModelDescriptor descriptor= dataModel.getDescriptorCache();
         if (descriptor != null)
@@ -45,7 +45,7 @@ public class TDataModelHelper {
             throws TDataModelException, TIllegalArgumentException{
 
         if (dataModelClass == null)
-            throw TNullArgException.create("dataModelClass");
+            throw new TNullArgException("dataModelClass");
 
         TDataModelDescriptor descriptor= TDataModelRegistry.get(dataModelClass.getName(), false);
 
@@ -61,18 +61,21 @@ public class TDataModelHelper {
             throws TDataModelException, TIllegalArgumentException{
 
         if (dataModel == null)
-            throw TNullArgException.create("dataModel");
+            throw new TNullArgException("dataModel");
 
         if (fieldName == null)
-            throw TNullArgException.create("fieldName");
+            throw new TNullArgException("fieldName");
 
         TDataModelDescriptor dataModelDescriptor= getDataModelDescriptor(dataModel);
 
         TFieldDescriptor fieldDescriptor= dataModelDescriptor.getFields().get(fieldName);
 
-        if (fieldDescriptor == null)
-            throw new TFieldNotExistsException(TDataModelMCodes.FIELD_NAME_NOT_EXISTS
-            , TMCodeSeverity.ERROR, null, dataModel.getClass().getName(), fieldName.toString());
+        if (fieldDescriptor == null) {
+            /*throw*/
+            new TFieldNotExistsException(TDataModelMCodes.FIELD_NAME_NOT_EXISTS
+                    , TMCodeSeverity.TRACE, null, dataModel.getClass().getName(), fieldName.toString()).log();
+            return null;
+        }
 
         return fieldDescriptor;
     }
@@ -87,10 +90,10 @@ public class TDataModelHelper {
             throws TDataModelException, TIllegalArgumentException {
 
         if (dataModel == null)
-            throw TNullArgException.create("dataModel").log();
+            throw new TNullArgException("dataModel").log();
 
         if (fieldDescriptor == null)
-            throw TNullArgException.create("fieldDescriptor").log();
+            throw new TNullArgException("fieldDescriptor").log();
 
         Object fieldValue= null;
 
@@ -150,10 +153,10 @@ public class TDataModelHelper {
             throws TDataModelException, TIllegalArgumentException {
 
         if (dataModel == null)
-            throw TNullArgException.create("dataModel").log();
+            throw new TNullArgException("dataModel").log();
 
         if (fieldDescriptor == null)
-            throw TNullArgException.create("fieldDescriptor").log();
+            throw new TNullArgException("fieldDescriptor").log();
 
         // >>> Its logically better to just throw an exception in case of type mismatch
         // converting types to each other may cause horrible mistakes ...

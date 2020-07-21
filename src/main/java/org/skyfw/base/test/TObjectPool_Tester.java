@@ -1,10 +1,8 @@
 package org.skyfw.base.test;
 
-import org.skyfw.base.collection.TMapWalker;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.log.TLogger;
-import org.skyfw.base.pool.TObjectPool;
-import org.skyfw.base.pool.TPoolConfig;
+import org.skyfw.base.pool.TBasePoolConfig;
 import org.skyfw.base.pool.TPoolSet;
 import org.skyfw.base.serializing.adapters.TStringSerializerAdapter;
 import org.skyfw.base.serializing.adapters.TStringSerializerConfig;
@@ -57,7 +55,7 @@ public class TObjectPool_Tester {
         return true;
     }
 
-    private class TTestPoolConfig implements TPoolConfig{
+    private class TTestPoolConfig extends TBasePoolConfig {
 
     }
 

@@ -57,9 +57,7 @@ public interface TSerializable<T extends TSerializable<T>> {
 
     //SAVE To AND LOAD From FILE METHODS
     //----------------------------------
-    public default TResult serializeToTextFile(File file, Class<? extends TStringSerializerAdapter> adapterClass) throws TException{
-        TResult result= TResult.create();
-
+    default void serializeToTextFile(File file, Class<? extends TStringSerializerAdapter> adapterClass) throws TException{
 
         String jsonString= this.serializeToString(adapterClass);
         /*if ((jsonString == null) || (jsonString.isEmpty()))
@@ -85,7 +83,6 @@ public interface TSerializable<T extends TSerializable<T>> {
 
         }
 
-        return result.finish();
     }
 
 

@@ -135,6 +135,8 @@ public interface TDataModel extends TServiceMethodParam, Serializable, Map<Strin
 
         try {
             TFieldDescriptor fieldDescriptor= TDataModelHelper.getFieldDescriptor(this, fieldName);
+            if (fieldDescriptor == null)
+                return null;
             Class fieldType= fieldDescriptor.getReflectionField().getType();
 
             if (!value.getClass().equals(fieldType)) {
@@ -156,7 +158,7 @@ public interface TDataModel extends TServiceMethodParam, Serializable, Map<Strin
                     value = dataSet;
                 } else {
 
-                    throw TIllegalArgumentException.create(TDataModelMCodes.INCOMPATIBLE_VALUE);
+                    throw new TIllegalArgumentException(TDataModelMCodes.INCOMPATIBLE_VALUE);
                 }
             }
 

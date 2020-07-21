@@ -16,11 +16,11 @@ public class TResponseMetaData_Tester {
         }catch (Throwable e){
 
             TIllegalArgumentException illegalArgumentException= new TIllegalArgumentException(
-                    TBaseMCode.BAD_ARGUMENT, TMCodeSeverity.FATAL, e, "var1");
+                    TBaseMCode.LOCAL_ARGS_CHECK_FAILED, "var1");
 
-            TResponseMetaData responseMetaData= new TResponseMetaData(illegalArgumentException);
+           /* TResponseMetaData responseMetaData= new TResponseMetaData(illegalArgumentException);
             String json= responseMetaData.serializeToString(TGsonAdapter.class);
-            responseMetaData.deserializeFromString(json, TGsonAdapter.class);
+            responseMetaData.deserializeFromString(json, TGsonAdapter.class);*/
         }
 
 

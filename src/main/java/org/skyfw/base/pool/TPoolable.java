@@ -1,12 +1,17 @@
 package org.skyfw.base.pool;
 
+import org.skyfw.base.configuration.TConfigurable;
+import org.skyfw.base.exception.TException;
 import org.skyfw.base.pool.exception.TPoolableInitException;
-import org.skyfw.base.result.TResult;
 import stormpot.Poolable;
 
-public interface TPoolable<T extends TPoolConfig> extends Poolable {
+public interface TPoolable<T extends TPoolConfig> extends Poolable, TConfigurable<T> {
 
-    void init(T poolConfig) throws TPoolableInitException;
+
+    @Override
+    void config(T config) throws TPoolableInitException;
+
+
 
     /**
      * The main purpose of defining this methods is to warn everyone to keep mother pool instance some where in
@@ -23,5 +28,5 @@ public interface TPoolable<T extends TPoolConfig> extends Poolable {
         this.getMotherPool().releaseObject(this);
     }
 
-    Class<? extends T> getConfigClass();
+    Class<T> getConfigClass();
 }

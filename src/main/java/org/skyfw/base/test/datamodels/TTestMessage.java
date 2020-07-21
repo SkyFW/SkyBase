@@ -7,15 +7,6 @@ import org.skyfw.base.datamodel.annotation.*;
 @DataModel(dataStoreName = "users_table", autoKey = true)
 
 @DataModelIndexEntry({
-        @IndexParam(fieldName = "UserId", dataSegmentSize = 100)
-})
-
-@DataModelIndexEntry({
-        @IndexParam(fieldName = "Name", dataSegmentSize = 100),
-        @IndexParam(fieldName = "Family")
-})
-
-@DataModelIndexEntry({
         @IndexParam(fieldName = "messageGroup", dataSegmentSize = 100),
         @IndexParam(fieldName = "creationTime")
 })

@@ -10,7 +10,7 @@ public class TArgumentChecker {
         for (Object object: objects){
 
             if (object == null)
-                throw TNullArgException.create("");
+                throw new TNullArgException("");
         }
 
     }

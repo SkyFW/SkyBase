@@ -2,12 +2,12 @@ package org.skyfw.base.log;
 
 
 import org.skyfw.base.classes.TObjects;
+import org.skyfw.base.configuration.TDefaults;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.log.printers.file.THtmlLogPrinter;
 import org.skyfw.base.log.printers.terminal.TLogLinearPrettyPrinter;
 import org.skyfw.base.log.printers.TLogPrinter_Interface;
 import org.skyfw.base.mcodes.TMCode;
-import org.skyfw.base.system.TSystemUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.skyfw.base.mcodes.TMCodeSeverity;
 
@@ -20,9 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class TLogger {
 
-    //Static Default Settings
+    // >>> Static Default Settings
     public static TMCodeSeverity defaultMinLogLevelForPrint= TMCodeSeverity.DEBUG;
     public static TMCodeSeverity defaultMinLogLevelForFile= TMCodeSeverity.WARNING;
+
+    // >>> Defaults
+    public static TLogPrinter_Interface defaultLogPrinter;
+    public static TLogPrinter_Interface defaultLogFilePrinter;
+    public static TLogManager_Interface defaultLogManager= null;
+
 
     //Logger Settings
     private TMCodeSeverity minLogLevelForPrint = defaultMinLogLevelForPrint;
@@ -34,13 +40,10 @@ public final class TLogger {
 
     private File outputFile= null;
     private TLogPrinter_Interface logPrinter= null;
-    private TLogPrinter_Interface fileLogPrinter= null;
+    private TLogPrinter_Interface logFilePrinter = null;
     private TLogManager_Interface logManager= null;
 
-    //Defaults
-    static TLogPrinter_Interface defaultLogPrinter;
-    static TLogPrinter_Interface defaultFileLogPrinter;
-    static TLogManager_Interface defaultLogManager= null;
+
 
 
     //Static
@@ -55,7 +58,7 @@ public final class TLogger {
             //Generating The Default log Path
             //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Calendar calendar = Calendar.getInstance();
-            final String defaultLogPath= FilenameUtils.separatorsToSystem(TSystemUtils.getExecPath()
+            final String defaultLogPath= FilenameUtils.separatorsToSystem(TDefaults.defaultDir
                     + "\\Logs"
                     + "\\" + calendar.get(Calendar.YEAR)
                     + "\\" + (calendar.get(Calendar.MONTH)+1) //LocalDate.now().getMonthValue()
@@ -69,8 +72,9 @@ public final class TLogger {
             //Force Create The Default log Path Directories
             new File (new File(defaultLogPath).getParentFile().getPath()).mkdirs();
 
-            defaultFileLogPrinter= new THtmlLogPrinter(new FileOutputStream(new File(defaultLogPath)));
+            defaultLogFilePrinter = new THtmlLogPrinter(new FileOutputStream(new File(defaultLogPath)));
         }catch (Exception e){
+            System.out.println(e);
         }
     }
 
@@ -99,8 +103,8 @@ public final class TLogger {
             this.fileName = Thread.currentThread().getStackTrace()[4].getFileName();
         }
 
-        if (this.fileLogPrinter == null)
-            this.fileLogPrinter= defaultFileLogPrinter;
+        if (this.logFilePrinter == null)
+            this.logFilePrinter = defaultLogFilePrinter;
 
         if (this.logPrinter == null)
             this.logPrinter= defaultLogPrinter;
@@ -395,8 +399,8 @@ public final class TLogger {
         this.logPrinter.print(logRecord);
 
         if (logLevel.getValue() >= this.minLogLevelForFile.getValue())
-        if (this.fileLogPrinter != null)
-            this.fileLogPrinter.print(logRecord);
+        if (this.logFilePrinter != null)
+            this.logFilePrinter.print(logRecord);
 
 
     }

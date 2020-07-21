@@ -1,7 +1,5 @@
 package org.skyfw.base.system.jar;
 
-import org.skyfw.base.datamodel.TDataModel;
-import org.skyfw.base.datamodel.TGenericDataModel;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.mcodes.TMCode;
 import org.skyfw.base.mcodes.TMCodeSeverity;
@@ -10,10 +8,15 @@ import java.io.File;
 
 public class TJarFileException extends TException {
 
-    private String jarFile;
+    private String filePath;
 
-    protected TJarFileException(TMCode mCode, TMCodeSeverity severity, Throwable cause) {
+    public TJarFileException(TMCode mCode, TMCodeSeverity severity, Throwable cause) {
         super(mCode, severity, cause);
+    }
+
+    public TJarFileException(TMCode mCode, TMCodeSeverity severity, Throwable cause, String filePath) {
+        super(mCode, severity, cause);
+        this.filePath = filePath;
     }
 
     public static TJarFileException create(File jarFile, Throwable cause){
@@ -42,16 +45,16 @@ public class TJarFileException extends TException {
 
         TJarFileException exception= new TJarFileException(mCode, severity, cause);
         if (jarFile != null)
-            exception.setJarFile(jarFile.getName());
+            exception.setFilePath(jarFile.getName());
         return exception;
     }
 
 
-    public String getJarFile() {
-        return jarFile;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setJarFile(String jarFile) {
-        this.jarFile = jarFile;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

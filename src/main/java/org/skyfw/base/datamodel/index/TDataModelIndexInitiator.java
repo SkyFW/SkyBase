@@ -5,6 +5,7 @@ import org.skyfw.base.datamodel.TDataModelMCodes;
 import org.skyfw.base.datamodel.TFieldDescriptor;
 import org.skyfw.base.datamodel.exception.TDataModelIndexParamInitException;
 import org.skyfw.base.mcodes.TMCodeSeverity;
+import org.skyfw.base.utils.TStringUtils;
 
 public class TDataModelIndexInitiator {
 
@@ -19,8 +20,12 @@ public class TDataModelIndexInitiator {
     }
 
     public void addParam (String fieldName, Integer dataSegmentSize) throws TDataModelIndexParamInitException{
-        TFieldDescriptor fieldDescriptor=
-                dataModelDescriptor.fields.get(fieldName);
+
+        TFieldDescriptor fieldDescriptor= dataModelDescriptor.fields.get(fieldName);
+
+        if (fieldDescriptor == null)
+            fieldDescriptor= dataModelDescriptor.fields.get(TStringUtils.uncapitalize(fieldName));
+
         if (fieldDescriptor == null)
             throw new TDataModelIndexParamInitException(TDataModelMCodes.INDEX_PARAM_FIELD_NOT_FOUND
                     , TMCodeSeverity.FATAL, null, dataModelDescriptor.clazz.getName(), fieldName);

@@ -41,7 +41,6 @@ public class TDataModelInitiator {
     // >>> Init
     //------------------------------------------------------------------------------------------------------------------
     public TDataModelDescriptor initByAnnotations() throws TDataModelInitializationException {
-        TResult result= TResult.create();
 
         if ( ! TDataModel.class.isAssignableFrom(this.dataModelClass))
             throw  TDataModelInitializationException.create(TDataModelMCodes.CLASS_IS_NOT_EXTENDED_FROM_TDATAMODEL
@@ -75,8 +74,8 @@ public class TDataModelInitiator {
         // >>> Final checks
         if (this.dataModelDescriptor.getKeyFieldName() == null) {
             /*throw*/ TDataModelInitializationException.create(TDataModelMCodes.NO_KEY_FIELD_IS_DETERMINED
-                    , TMCodeSeverity.FATAL, this.dataModelClass, null).log();
-            TSystem.haltAndCatchFire();
+                    , TMCodeSeverity.WARNING, this.dataModelClass, null).log();
+            //TSystem.haltAndCatchFire();
         }
 
 

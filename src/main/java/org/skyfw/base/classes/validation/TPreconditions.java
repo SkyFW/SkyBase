@@ -10,23 +10,22 @@ public class TPreconditions {
 
     public static void checkArgForNotNull(Object argValue, String argName) throws TIllegalArgumentException {
         if (argValue == null)
-            throw new TNullArgException(TBaseMCode.NULL_ARGUMENT_IS_NOT_ACCEPTABLE, TMCodeSeverity.ERROR, null, argName);
+            throw new TNullArgException(argName);
     }
 
     public static void checkArgForNotNullOrEmpty(String argValue, String argName) throws TIllegalArgumentException {
 
         if (argValue == null)
-            throw new TNullArgException(TBaseMCode.NULL_ARGUMENT_IS_NOT_ACCEPTABLE, TMCodeSeverity.ERROR, null, argName);
+            throw new TNullArgException(argName);
 
         if (argValue.isEmpty())
-            throw new TEmptyStringArgException(TArgValidationMCode.EMPTY_STRING_ARG_IS_NOT_ACCEPTABLE
-                    , TMCodeSeverity.ERROR, null, argName);
+            throw new TEmptyStringArgException(TArgValidationMCode.EMPTY_STRING_ARG_IS_NOT_ACCEPTABLE, argName);
     }
 
     public static void checkArgForNotNullOrEmpty(Object argValue, String argName) throws TIllegalArgumentException {
 
         if (argValue == null)
-            throw new TNullArgException(TBaseMCode.NULL_ARGUMENT_IS_NOT_ACCEPTABLE, TMCodeSeverity.ERROR, null, argName);
+            throw new TNullArgException(argName);
 
         checkArgForNotNullOrEmpty(argValue.toString(), argName);
     }

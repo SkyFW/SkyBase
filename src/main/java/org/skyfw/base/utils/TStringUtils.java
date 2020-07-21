@@ -186,7 +186,6 @@ public class TStringUtils {
 
 
     public static void writeStringToFile(File file, String data) throws TFileWriteException {
-        TResult result= TResult.create();
         try {
             FileUtils.writeStringToFile(file, data, "UTF-8", false);
         }catch (Exception e){
@@ -209,5 +208,8 @@ public class TStringUtils {
         return StringUtils.capitalize(str);
     }
 
+    public static String uncapitalize(String str) {
+        return StringUtils.uncapitalize(str);
+    }
 
 }

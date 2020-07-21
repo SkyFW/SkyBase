@@ -35,7 +35,7 @@ public class TResultDataModel extends TBaseDataModel implements
     @Override
     public void onAfterDeserialize(byte[] bytes, Class<TResultDataModel> mainClass, Class[] genericParams, TResultDataModel object) throws Exception {
 
-        //object.result.
+        //value.result.
     }
 
     @Override

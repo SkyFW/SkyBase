@@ -66,8 +66,13 @@ public abstract class TException/*<M extends TMCode, ED extends TMessageDetails>
         this.severity= cause.severity;
     }
 
+    protected TException(TMCode mCode){
+        this(mCode, TMCodeSeverity.UNKNOWN, null);
+    }
+
     protected TException(TException cause){
-        this(null, cause);
+        this(cause.getmCode(), cause.getSeverity(), cause);
+
     }
 
 

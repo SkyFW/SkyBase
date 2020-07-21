@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.skyfw.base.exception.TException;
 import org.skyfw.base.pool.TObjectPool;
 import org.skyfw.base.pool.TPoolable;
 import org.skyfw.base.pool.exception.TPoolableInitException;
 import org.skyfw.base.result.TResult;
+import org.skyfw.base.serializing.adapters.TStringSerializerConfig;
 import org.skyfw.base.serializing.adapters.json.TJsonSerializerConfig;
 
 public class TJacksonObjectMapper extends ObjectMapper implements TPoolable<TJsonSerializerConfig> {
@@ -17,10 +19,8 @@ public class TJacksonObjectMapper extends ObjectMapper implements TPoolable<TJso
     //public ObjectMapper objectMapper = null;
 
 
-    @Override
-    public Class<? extends TJsonSerializerConfig> getConfigClass() {
-        return null;
-    }
+
+
 
     @Override
     public TObjectPool<TJacksonObjectMapper> getMotherPool() {
@@ -34,12 +34,16 @@ public class TJacksonObjectMapper extends ObjectMapper implements TPoolable<TJso
     }
 
 
+    // >>> Implementation Of `TConfigurable`
+    //------------------------------------------------------------------------------------------------------------------
+    @Override
+    public Class<TJsonSerializerConfig> getConfigClass() {
+        return null;
+    }
 
     @Override
-    public void init(TJsonSerializerConfig poolConfig) throws TPoolableInitException {
+    public void config(TJsonSerializerConfig poolConfig) throws TPoolableInitException {
 
-        TResult result= TResult.create();
-        
         //For Testing The Pool Abilities
         /*
         try {

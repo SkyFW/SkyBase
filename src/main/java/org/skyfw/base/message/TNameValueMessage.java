@@ -39,7 +39,7 @@ public class TNameValueMessage implements Serializable, TSerializable<TNameValue
 
     //Java Native Serialization Do Not Need Keeping "dataTypes" As Data Because It Will Save This As MetaData
     //In Fact The original class and package names are encoded along with the data
-    //and the incoming object is constructed as that class, so, to avoid a class cast exception,
+    //and the incoming value is constructed as that class, so, to avoid a class cast exception,
     // what you cast it to must be identical
     private HashMap<String, String> dataTypes;
 

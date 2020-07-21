@@ -52,7 +52,7 @@ public class TGsonMerge {
                 } else {//not both arrays or objects, normal merge with conflict resolution
                     handleMergeConflict(rightKey, leftObj, leftVal, rightVal, conflictStrategy);
                 }
-            } else {//no conflict, add to the object
+            } else {//no conflict, add to the value
                 leftObj.add(rightKey, rightVal);
             }
         }

@@ -119,10 +119,10 @@ public class TDataSet<E extends TDataModel> extends LinkedList<E> implements TSe
     public TSortedDataSet<E> search(String fieldName, Object param1, Object param2)
             throws TDataModelException, TIllegalArgumentException {
 
-        TFieldDescriptor fieldDescriptor= TDataModelHelper.getFieldDescriptor(this.getFirst(), fieldName);
-
         if (this.isEmpty())
-            return new TDataTreeSet<>(fieldDescriptor);
+            return null;
+
+        TFieldDescriptor fieldDescriptor= TDataModelHelper.getFieldDescriptor(this.getFirst(), fieldName);
 
         return this.getSortedSet(fieldDescriptor)
                 .subSetByFieldValue(param1, true,  param2, false);
@@ -132,10 +132,10 @@ public class TDataSet<E extends TDataModel> extends LinkedList<E> implements TSe
     public TSortedDataSet<E> search(String fieldName, Object fieldValue)
             throws TDataModelException, TIllegalArgumentException {
 
-        TFieldDescriptor fieldDescriptor= TDataModelHelper.getFieldDescriptor(this.getFirst(), fieldName);
-
         if (this.isEmpty())
-            return new TDataTreeSet<>(fieldDescriptor);
+            return null;
+
+        TFieldDescriptor fieldDescriptor= TDataModelHelper.getFieldDescriptor(this.getFirst(), fieldName);
 
         return this.getSortedSet(fieldDescriptor)
                 .subSetByFieldValue(fieldValue);
@@ -177,9 +177,9 @@ public class TDataSet<E extends TDataModel> extends LinkedList<E> implements TSe
 
         // >>> Check input args
         if (minValue == null)
-            throw TNullArgException.create("minValue");
+            throw new TNullArgException("minValue");
         if (maxValue == null)
-            throw TNullArgException.create("maxValue");
+            throw new TNullArgException("maxValue");
 
         TDataSet<E> result = new TDataSet<>();
 

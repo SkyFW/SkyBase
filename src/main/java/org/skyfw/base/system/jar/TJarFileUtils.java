@@ -8,7 +8,6 @@ import java.io.File;
 public class TJarFileUtils {
 
     public static String getVersionFromJarManifest(File jarfile) throws TJarFileException, TIllegalArgumentException {
-        TResult<String> result= TResult.create(String.class);
 
         //java.io.file file = new java.io.file("/drivers/h2/h2-1.3.162.jar");
         try {
@@ -40,7 +39,6 @@ public class TJarFileUtils {
 
 
     public static String getVersionFromJarName(File jarFile){
-        TResult<String> result= TResult.create(String.class);
 
         //java.io.file file = new java.io.file("/drivers/h2/h2-1.3.162.jar");
         String versionNumber = "";
@@ -58,7 +56,6 @@ public class TJarFileUtils {
     }
 
     public static String getArtifactNameFromJarName(File jarFile) throws TJarFileException, TIllegalArgumentException{
-        TResult<String> result= TResult.create(String.class);
 
         String artifactName = "";
         String fileName = jarFile.getName().substring(0, jarFile.getName().lastIndexOf("."));

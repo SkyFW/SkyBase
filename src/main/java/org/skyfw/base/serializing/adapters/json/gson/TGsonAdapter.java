@@ -2,29 +2,30 @@ package org.skyfw.base.serializing.adapters.json.gson;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import org.skyfw.base.datamodel.TDataModel;
-import org.skyfw.base.datamodel.TDataSet;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import org.skyfw.base.classes.TNumbers;
+import org.skyfw.base.classes.objectFactory.TObjectFactory;
+import org.skyfw.base.datamodel.*;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.exception.general.TIllegalArgumentException;
 import org.skyfw.base.exception.general.TNullArgException;
 import org.skyfw.base.log.TLogger;
 import org.skyfw.base.pool.TObjectPool;
-import org.skyfw.base.pool.exception.TObjectPoolException;
 import org.skyfw.base.pool.exception.TPoolableInitException;
-import org.skyfw.base.serializing.TSerializable;
 import org.skyfw.base.serializing.adapters.TStringSerializerConfig;
 import org.skyfw.base.serializing.adapters.json.TJsonAdapter;
-import org.skyfw.base.result.TResult;
 import org.skyfw.base.mcodes.TBaseMCode;
 import org.skyfw.base.mcodes.TMCode;
 import org.skyfw.base.mcodes.TMCodeSeverity;
 import org.skyfw.base.serializing.exception.TDeserializeException;
 import org.skyfw.base.serializing.exception.TSerializeException;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class TGsonAdapter implements TJsonAdapter {
     TLogger logger= TLogger.getLogger();
@@ -34,20 +35,13 @@ public class TGsonAdapter implements TJsonAdapter {
     Gson gson;
 
     @Override
-    public Class<TStringSerializerConfig> getConfigClass() {
-        return null;
-    }
-
-    @Override
     public String serialize(/*TSerializable*/Object object) throws TSerializeException, TIllegalArgumentException {
 
-        TResult<String> result = TResult.create(String.class);
-
         if (object == null)
-            throw TNullArgException.create("object");
+            throw new TNullArgException("value");
 
 
-        //Class[] classes = new Class[]{object.getClass()};
+        //Class[] classes = new Class[]{value.getClass()};
 
         try {
             //Type type = TGsonUtils.getTypeTokenByClass(classes[0]);
@@ -61,9 +55,13 @@ public class TGsonAdapter implements TJsonAdapter {
     }
 
 
+    TSkyJsonDeserializer skyJsonDeserializer= new TSkyJsonDeserializer();
     @Override
     public <S/* extends TSerializable*/> S deserialize(String jsonString, Class<S> mainClass, Class[] genericParams)
             throws TDeserializeException, TIllegalArgumentException {
+
+        if (TDataModel.class.isAssignableFrom(mainClass) || TDataSet.class.isAssignableFrom(mainClass))
+            return skyJsonDeserializer.internalDeserialize(jsonString, mainClass, genericParams);
 
         try {
             //It Will Do The Magic When Deserializing The Generic Types ;)
@@ -106,8 +104,7 @@ public class TGsonAdapter implements TJsonAdapter {
                 throw TDeserializeException.create(TGsonAdapter_MCodes.SETTER_FIELD_WRONG_ARGUEMENT_TYPE, TGsonAdapter.class, mainClass, e);
 
         } catch (Exception e) {
-            //return result.fail(TResultCode.SERVER_INTERNAL_ERROR, "exception: " + e.toString());
-
+                throw TDeserializeException.create(TGsonAdapter_MCodes.UNKNOWN_EXCEPTION, TGsonAdapter.class, mainClass, e);
         }
 
         return null;
@@ -163,13 +160,18 @@ public class TGsonAdapter implements TJsonAdapter {
         }
     }
 
-
+    // >>> Implementation Of `TConfigurable`
+    //------------------------------------------------------------------------------------------------------------------
+    @Override
+    public Class<TStringSerializerConfig> getConfigClass() {
+        return null;
+    }
 
 
     // >>> Implementation Of `TPoolable`
     //------------------------------------------------------------------------------------------------------------------
     @Override
-    public void init(TStringSerializerConfig poolConfig) throws TPoolableInitException {
+    public void config(TStringSerializerConfig poolConfig) throws TPoolableInitException {
 
         GsonBuilder gsonBuilder= new GsonBuilder();
 
@@ -253,6 +255,235 @@ public class TGsonAdapter implements TJsonAdapter {
 
 
     static {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public static class TSkyJsonDeserializer {
+
+        JsonReader jsonReader;
+        Stack<TItem> itemStack = new Stack<>();
+        Stack<Class> typeStack = new Stack<>();
+        String currentItemName = null;
+
+        private <S/* extends TSerializable*/> S internalDeserialize(String jsonString, Class<S> mainClass, Class[] genericParams)
+                throws TDeserializeException, TIllegalArgumentException {
+
+
+            // >>> preparing
+            this.jsonReader = new JsonReader(new StringReader(jsonString));
+            this.currentItemName = null;
+            this.itemStack.clear();
+            this.typeStack.clear();
+            /*this.typesArr = new Class[1 + genericParams.length];*/
+            for (int i = genericParams.length-1; i >= 0 ; i--)
+                this.typeStack.push(genericParams[i]);
+            this.typeStack.push(mainClass);
+            try {
+                // >>> creating and pushing the root element
+                /*TItem rootItem= new TItem();
+                rootItem.name= "root";
+                rootItem.value= TObjectFactory.newInstance(mainClass);
+                if (TDataModel.class.isAssignableFrom(mainClass))
+                    rootItem.dataModelDescriptor= TDataModelHelper.getDataModelDescriptor((Class<? extends TDataModel>) mainClass);
+                this.itemStack.push(rootItem);*/
+
+
+
+                while (true/*jsonReader.hasNext()*/) {
+
+                    JsonToken nextToken = jsonReader.peek();
+
+                    //--------------------------------------------------------------------------------------------------
+                    if (JsonToken.BEGIN_ARRAY.equals(nextToken)) {
+
+                        // >>> behaving normal
+                        Class type= this.getCurrentTokenType();
+                        if (!Collection.class.isAssignableFrom(type))
+                            throw new RuntimeException("JSON_ARRAY_FOUND_BUT_REQUESTED_TYPE_IS_NOT_A_SET");
+
+
+                        TItem item = new TItem();
+                        item.name = currentItemName;
+                        item.value = new TDataSet();
+                        itemStack.push(item);
+
+                        jsonReader.beginArray();
+                        this.currentItemName= null;
+                        continue;
+                    }
+                    //--------------------------------------------------------------------------------------------------
+                    if ((JsonToken.END_OBJECT.equals(nextToken)) || (JsonToken.END_ARRAY.equals(nextToken))) {
+
+                        // >>>
+                        if (JsonToken.END_ARRAY.equals(nextToken)) {
+                            typeStack.pop();
+                            jsonReader.endArray();
+                        }else {
+                            jsonReader.endObject();
+                        }
+
+                        TItem currentItem = itemStack.pop();
+                        if (itemStack.isEmpty()) {
+                            return (S) currentItem.value;
+                        }
+                        TItem parentItem = itemStack.peek();
+                        addToParent(parentItem, currentItem.name, currentItem.value);
+                        continue;
+                    }
+                    //--------------------------------------------------------------------------------------------------
+                    if (JsonToken.BEGIN_OBJECT.equals(nextToken)) {
+
+                        jsonReader.beginObject();
+                        /*nextToken = jsonReader.peek();
+                        if (!JsonToken.NAME.equals(nextToken))
+                            throw new RuntimeException("MALFORMED_JSON_OBJECT_NAME_NOT_FOUND");*/
+
+                        TItem item = new TItem();
+                        item.name = currentItemName;
+                        Class type= this.getCurrentTokenType();
+                        if (type != null) {
+                            item.value = TObjectFactory.newInstance(type);
+                            item.dataModelDescriptor = TDataModelHelper.getDataModelDescriptor(type);
+                        }
+                        itemStack.push(item);
+                        this.currentItemName= null;
+                        continue;
+                    }
+
+                    //--------------------------------------------------------------------------------------------------
+                    if (JsonToken.END_DOCUMENT.equals(nextToken)) {
+                        System.out.println(nextToken);
+                        jsonReader.skipValue();
+                        continue;
+                    }
+
+                    //--------------------------------------------------------------------------------------------------
+                    if (JsonToken.NAME.equals(nextToken)) {
+
+                        this.currentItemName= jsonReader.nextName();
+
+                        nextToken = jsonReader.peek();
+                        //throw new RuntimeException("MALFORMED_EXCEPTION_INVALID_TOKEN_AFTER_NAME_TOKEN");
+                        continue;
+                    }
+
+                    // >>> processing value token
+                    {
+                        Object value= null;
+                        Class type= this.getCurrentTokenType();
+
+                        if (JsonToken.STRING.equals(nextToken)) {
+
+                            String strValue = jsonReader.nextString();
+
+                            if ((type != null) && (Enum.class.isAssignableFrom(type)))
+                                value = Enum.valueOf(type, strValue);
+                            else
+                                value= strValue;
+                        }
+                        else if (JsonToken.NUMBER.equals(nextToken)) {
+
+                            String strValue = jsonReader.nextString();
+                            // >>> In case of setting field in "TGenericDataModel"
+                            if (type == null)
+                                type= Double.class;
+                            value= TNumbers.create(strValue, type);
+                        }
+                        else if (JsonToken.BOOLEAN.equals(nextToken)) {
+
+                            value = jsonReader.nextBoolean();
+
+                        }
+                        else if (JsonToken.NULL.equals(nextToken)) {
+
+                            jsonReader.skipValue();
+                            value= null;
+                        }
+
+                        if (itemStack.isEmpty())
+                            return (S) value;
+                        else
+                            this.addToParent(itemStack.peek(), this.currentItemName, value);
+                        this.currentItemName= null;
+                    }
+
+
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            //return null;
+        }
+
+        private Class getCurrentTokenType(){
+            // >>> In case of parent node is not exists in requested type
+            if ( ! itemStack.isEmpty() && (itemStack.peek().value== null))
+                return null;
+
+            if (itemStack.isEmpty())
+                return typeStack.pop();
+
+            if ((itemStack.peek().dataModelDescriptor== null))
+                return typeStack.peek();
+
+            if ( TGenericDataModel.class.equals(itemStack.peek().value.getClass()))
+                return null;
+
+            TFieldDescriptor fieldDescriptor= itemStack.peek().dataModelDescriptor.fields.get(currentItemName);
+            if (fieldDescriptor == null)
+                return null;
+
+            return itemStack.peek().dataModelDescriptor.fields.get(currentItemName).getType();
+        }
+
+
+        private void addToParent(TItem parentItem , String name, Object value) throws TException {
+
+            // >>> In case of parent node is not exists in requested type
+            if (parentItem.value == null)
+                return;
+
+            if (parentItem.value instanceof  Collection){
+                ((Collection) parentItem.value).add(value);
+
+            } else if (parentItem.value instanceof TDataModel){
+                if (parentItem.value instanceof TGenericDataModel)
+                    ((TGenericDataModel) parentItem.value).put(name, value);
+                else {
+                    TFieldDescriptor fieldDescriptor= parentItem.dataModelDescriptor.fields.get(name);
+                    if (fieldDescriptor != null)
+                        TDataModelHelper.setFieldValue((TDataModel) parentItem.value, fieldDescriptor, value);
+                }
+            } else {
+                throw new RuntimeException("PARENT_ITEM_IS_NEITHER_DATAMODEL_OR_COLLECTION");
+            }
+        }
+
+
+        private static final class TItem {
+
+            public String name= null;
+            public Object value= null;
+            public TDataModelDescriptor dataModelDescriptor= null;
+        }
+
 
     }
 

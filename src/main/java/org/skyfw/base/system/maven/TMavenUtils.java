@@ -1,10 +1,7 @@
 package org.skyfw.base.system.maven;
 
-import org.skyfw.base.result.TResult;
-import javafx.application.Application;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.skyfw.base.mcodes.TBaseMCode;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -47,8 +44,7 @@ public class TMavenUtils {
         return version;
     }
 
-    public static TResult<Model> getMavenModelFromJarFile(File  file){
-        TResult<Model> result= TResult.create(Model.class);
+    public static Model getMavenModelFromJarFile(File  file){
 
         try {
             //Var(s)
@@ -70,20 +66,22 @@ public class TMavenUtils {
                 jarFile.close();
             }
 
-            if (model == null)
+            /*if (model == null)
                 return result.fail(TMavenMCodes.MAVEN_MODEL_NOT_FOUND, null);
             else
-                return result.succeed(model);
+                return result.succeed(model);*/
+            return model;
 
         }catch (Exception e){
-            return result.fail(TBaseMCode.BAD_REQUEST, null/*"EXCEPTION: " + e.toString()*/);
+            return null;
+            //return result.fail(TBaseMCode.BAD_REQUEST, null/*"EXCEPTION: " + e.toString()*/);
         }
     }
 
 
     public static String getVersionFromPOM(){
 
-        try {
+        /*try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model model;
             if ((new File("pom.xml")).exists())
@@ -108,7 +106,7 @@ public class TMavenUtils {
         }
 
 
-        return null;
+        */return null;
     }
 
 

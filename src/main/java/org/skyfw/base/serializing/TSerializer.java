@@ -27,7 +27,7 @@ public class TSerializer {
     public static String serializeToString(Object object, Class<? extends TStringSerializerAdapter> adapterClass)
             throws TSerializeException, TObjectPoolException, TIllegalArgumentException {
 
-        TPreconditions.checkArgForNotNull(object, "object");
+        TPreconditions.checkArgForNotNull(object, "value");
         TPreconditions.checkArgForNotNull(adapterClass, "adapterClass");
 
         if (object instanceof TSerializeEventListener)
@@ -55,7 +55,7 @@ public class TSerializer {
     }
 
     /*public static <T extends TSerializable & TSerializeEventListener>
-    String serializeToString(T object, Class<? extends TStringSerializerAdapter> adapterClass)
+    String serializeToString(T value, Class<? extends TStringSerializerAdapter> adapterClass)
             throws TSerializeException, TObjectPoolException, TIllegalArgumentException {
 
     }*/
@@ -77,7 +77,7 @@ public class TSerializer {
 
             Object object = adapter.deserialize(jsonString, mainClass, genericParams);
 
-            // >>> Check if returned object class is wrong
+            // >>> Check if returned value class is wrong
             if ((!mainClass.equals(object.getClass()))
                     && (object instanceof Map)
                     && (TDataModel.class.isAssignableFrom(mainClass))) {
@@ -107,7 +107,7 @@ public class TSerializer {
     }
 
 
-    public static <T /*extends TSerializable/* & TDataModel*/> T deserializeFromString(String jsonString
+    public static <T /*extends TSerializable & TDataModel*/> T deserializeFromString(String jsonString
             , Class<? extends TStringSerializerAdapter> adapterClass
             , Class<T> mainClass)
             throws TDeserializeException, TObjectPoolException, TIllegalArgumentException {

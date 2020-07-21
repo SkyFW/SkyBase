@@ -2,7 +2,9 @@ package org.skyfw.base.mcodes;
 
 public enum TBaseMCode implements TMCode {
 
-    ANOTHER_SERVER_OFFER(100)
+    UNKNOWN(0)
+
+    , ANOTHER_SERVER_OFFER(100)
 
     , SUCCESS(200)
     , PARTITIAL_SUCCESS(202)
@@ -16,8 +18,11 @@ public enum TBaseMCode implements TMCode {
 
     , BAD_REQUEST(400)
 
-    , BAD_ARGUMENT(440)
+    , LOCAL_ARGS_CHECK_FAILED(440)
     , NULL_ARGUMENT_IS_NOT_ACCEPTABLE(441)
+
+    , REMOTE_ARGS_CHECK_FAILED(450)
+
 
     , AUTHENTICATION_FAILED (401)
 

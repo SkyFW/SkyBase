@@ -1,34 +1,21 @@
 package org.skyfw.base.exception.general;
 
-import org.skyfw.base.datamodel.exception.TDataModelException;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.mcodes.TMCode;
-import org.skyfw.base.mcodes.TMCodeSeverity;
 
 public class TIllegalArgumentException extends TException {
 
     String argName;
 
-    public TIllegalArgumentException(TMCode mCode, TMCodeSeverity severity, Throwable cause, String argName) {
-        super(mCode, severity, cause);
+    public TIllegalArgumentException(TMCode mCode, String argName) {
+        super(mCode);
         this.argName = argName;
     }
 
-    public static TIllegalArgumentException create(TMCode errorCode) {
-
-        return create(errorCode, TMCodeSeverity.UNKNOWN, null);
+    public TIllegalArgumentException(TMCode mCode) {
+        super(mCode);
+        this.argName = "";
     }
-
-    public static TIllegalArgumentException create(TMCode errorCode, String argName) {
-
-        return create(errorCode, TMCodeSeverity.UNKNOWN, argName);
-    }
-
-    public static TIllegalArgumentException create(TMCode errorCode, TMCodeSeverity severity, String argName) {
-
-        return new TIllegalArgumentException(errorCode, severity, null, argName);
-    }
-
 
     public String getArgName() {
         return argName;

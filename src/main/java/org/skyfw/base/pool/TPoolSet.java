@@ -38,7 +38,7 @@ public class TPoolSet<T extends TPoolable> {
             throws TObjectPoolException, TIllegalArgumentException {
 
         if (poolableObjectClass == null){
-            throw TIllegalArgumentException.create(TObjectPoolMCode.CLASS_PARAM_IS_NULL);
+            throw new TIllegalArgumentException(TObjectPoolMCode.CLASS_PARAM_IS_NULL);
         }
 
         // >>> Assigning the main list to a generic typed local variable(Pointer)

@@ -18,7 +18,7 @@ public class TResult_Tester {
         }*/
 
         //result= TResult.createTResult(TResultCode.SUCCESS, "");
-        TResult<Long> result= TResult.create();//TResult.createTResult(TResultCode.SUCCESS, tempLong2);
+        TResult<Long> result= new TResult<>();//TResult.createTResult(TResultCode.SUCCESS, tempLong2);
         result.setResultObject(tempLong2);
         tempLong= result.getResultObject();
         System.out.println(result.getResultObject());

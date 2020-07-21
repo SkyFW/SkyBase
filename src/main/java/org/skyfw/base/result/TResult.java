@@ -1,34 +1,44 @@
 package org.skyfw.base.result;
 
 import org.skyfw.base.exception.TException;
-import org.skyfw.base.log.TMessageDetails;
-import org.skyfw.base.mcodes.TBaseMCodeFamily;
-import org.skyfw.base.mcodes.TBaseMCode;
-import org.skyfw.base.mcodes.TMCode;
-import org.skyfw.base.serializing.modifiers.TStringSerializeModifier;
+import org.skyfw.base.exception.TExceptionDescriptor;
+import org.skyfw.base.mcodes.*;
+import org.skyfw.base.serializing.TDeserializeEventListener;
+import org.skyfw.base.serializing.TSerializeEventListener;
+
+import java.util.LinkedList;
+import java.util.Map;
 
 
-public class TResult<T> implements TStringSerializeModifier<TResult> {
+public class TResult<T> implements TDeserializeEventListener, TSerializeEventListener {
 
-    private transient String methodName;
 
     private transient TMCode mCode;
     private String code;
-    private TException e= null;
+    private TMCodeSeverity severity= TMCodeSeverity.UNKNOWN;
 
     private transient T resultObject= null;
 
-    private transient long benchmarkingStartTime;
-    private transient long benchmarkingStopTime;
+    private long executionTime;
+
+    private transient TException exception = null;
+    // >>> in case of result comes from remote machine
+    private TExceptionDescriptor[] exceptionChain= null;
+
+    private transient boolean remoteOrigin= false;
+
+    @Deprecated
+    private String resultCode;
+    @Deprecated
     private long benchmarkingTime;
 
 
-    //Constructor Methods
-    //~~~~~~~~~~~~~~~~~~~
-    public TResult() {
 
-        this.mCode= TBaseMCode.UNKNOWN_MESSAGE_CODE;
-        this.startBenchmarking();
+    // >>> Constructor methods
+
+
+    public TResult() {
+        this.mCode= TBaseMCode.UNKNOWN;
     }
 
     public TResult(T resultObject) {
@@ -37,34 +47,20 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
     }
 
     public TResult(TMCode mCode, T resultObject) {
-        this.startBenchmarking();
         this.mCode = mCode;
         this.resultObject = resultObject;
     }
 
     public TResult(TMCode mCode) {
-        this.startBenchmarking();
         this.mCode = mCode;
     }
 
-    public TResult(TException e) {
-        this.e= e;
+    public TResult(TException exception) {
+        this.exception = exception;
     }
 
     //Creator Methods
     //~~~~~~~~~~~~~~~
-    public static TResult create() {
-        return new TResult();
-    }
-
-    public static <Z> TResult<Z> create(Class<Z> clazz) {
-        return new TResult<Z>();
-    }
-
-    public static TResult create(String methodName) {
-        return new TResult(methodName);
-    }
-
     /*public static <Z> TResult<Z> create(Class<Z> clazz, String methodName) {
         return new TResult<Z>(methodName);
     }*/
@@ -77,9 +73,8 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
     //~~~~~~~~~~~~~~~~~~
     public TResult<T> finish(TMCode resultCode, T resultObject){
 
-        this.setmCode(resultCode);
+        this.setMCode(resultCode);
         this.setResultObject(resultObject);
-        this.stopBenchmarking();
         return this;
     }
 
@@ -89,13 +84,12 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
         if (anotherResult.equals(this))
             return this;
 
-        this.mCode= anotherResult.getmCode();
+        this.mCode= anotherResult.getMCode();
         try{
             //if (anotherResult.getResultObject().getClass().isAssignableFrom(Class<T>))
             this.setResultObject((T) anotherResult.getResultObject());
         }catch (Exception e){}
 
-        this.stopBenchmarking();
         return this;
     }
 
@@ -109,76 +103,56 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
 
         public TResult<T> finish(){
 
-        this.stopBenchmarking();
         return this;
     }
 
 
     public TResult<T> succeed(T resultObject){
 
-        this.setmCode(TBaseMCode.SUCCESS);
+        this.setMCode(TBaseMCode.SUCCESS);
         this.setResultObject(resultObject);
-        this.stopBenchmarking();
         return this;
     }
 
-    public TResult<T> fail(TMCode errorCode, TMessageDetails details){
+    public TResult<T> fail(TMCode errorCode, Map details){
 
-        this.setmCode(errorCode);
+        this.setMCode(errorCode);
         this.setResultObject(null);
-        this.stopBenchmarking();
         return this;
     }
 
     public TResult<T> fail(TMCode errorCode){
 
-        this.setmCode(errorCode);
+        this.setMCode(errorCode);
         this.setResultObject(null);
-        this.stopBenchmarking();
         return this;
     }
 
     public TResult<T> fail(TException exception){
 
-        this.setmCode(exception.getmCode());
-        this.e= exception;
+        this.setMCode(exception.getmCode());
+        this.exception = exception;
         this.setResultObject(null);
-        this.stopBenchmarking();
         return this;
     }
 
     public TResult<T> exception(TException exception){
 
-        this.setmCode(exception.getmCode());
-        this.e= exception;
+        this.setMCode(exception.getmCode());
+        this.exception = exception;
         return this;
     }
 
 
 
 
-    //Benchmarking Methods
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public void startBenchmarking(){
-
-        this.benchmarkingStartTime = System.currentTimeMillis();
+    // >>> Benchmarking methods
+    public long getExecutionTime() {
+        return executionTime;
     }
-
-    public long stopBenchmarking(){
-
-        this.benchmarkingStopTime =  System.currentTimeMillis();
-        this.benchmarkingTime = this.benchmarkingStopTime - this.benchmarkingStartTime;
-        return this.benchmarkingTime;
+    public void setExecutionTime(long time){
+        this.executionTime = time;
     }
-
-    public long getBenchmarkingTime() {
-        return benchmarkingTime;
-    }
-
-    public void setBenchmarkingTime(long time){
-        this.benchmarkingTime= time;
-    }
-    //------------------------------------------------------------------------------------------------------------------
 
 
     /*public boolean tryGetResultObject(Object _obj, Class clazz){
@@ -188,7 +162,7 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
                 return true;
             } else
                 return false;
-        }catch (exception e){
+        }catch (exception exception){
             return false;
         }
     }
@@ -198,7 +172,7 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
             Object tempOBJ= obj;
             boolean result= tryGetResultObject(obj, obj.getClass());
             return result;
-        }catch (exception e){
+        }catch (exception exception){
             return false;
         }
     }
@@ -217,7 +191,7 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
 
     public boolean isSuccessful(){
 
-        if (this.e != null)
+        if (this.exception != null)
             return false;
 
         try {
@@ -225,7 +199,7 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
             if (this.mCode == null)
                 return false;
 
-            if (this.getmCode().getBaseCode().getCodeFamily().equals(TBaseMCodeFamily.SUCCESS_CODE_FAMILY))
+            if (this.getMCode().getBaseCode().getCodeFamily().equals(TBaseMCodeFamily.SUCCESS_CODE_FAMILY))
                 return true;
             else
                 return false;
@@ -246,37 +220,56 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
         return resultObject;
     }
 
-    public void setResultObject(T resultObject) {
+    public TResult setResultObject(T resultObject) {
 
         this.resultObject = resultObject;
+        return this;
     }
 
-    //Simple Getter & Setter Methods
-    //------------------------------
-    public TMCode getmCode() {
-        return mCode;
-    }
+    // >>>
 
-    public void setmCode(TMCode mCode) {
-        this.mCode = mCode;
-    }
+    public TMCode getMCode() {
 
+        if ( (exception != null) && (exception instanceof TException) )
+            return exception.getmCode();
+        else if ( (this.exceptionChain != null) && (this.exceptionChain.length > 0) )
+            return this.exceptionChain[0].getmCode();
+        else
+            return this.mCode;
+    }
 
     public String getCode() {
-        return code;
+
+        if ( (this.exceptionChain != null) && (this.exceptionChain.length > 0) )
+            return this.exceptionChain[0].getCode();
+        else
+            return this.code;
+    }
+
+    public void setMCode(TMCode mCode) {
+        this.mCode = mCode;
     }
 
     public void setCode(String code) {
 
         this.code = code;
+    }
 
-        //TMCodeRegistry.
+    public TMCodeSeverity getSeverity() {
+        return severity;
+    }
 
+    public void setSeverity(TMCodeSeverity severity) {
+        this.severity = severity;
     }
 
     public String getMessage() {
 
-        return this.mCode.getRawMessage();
+        TMCode mCode= this.getMCode();
+        if (mCode != null)
+            return this.mCode.getRawMessage();
+        else
+            return "";
     }
 
     //----
@@ -286,17 +279,15 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
     public String toString() {
 
         String s= "";
-        if (this.methodName != null)
-            s= this.methodName.toUpperCase() + " : ";
 
-        if (this.getmCode() != null)
-            s= s + this.getmCode() + " | ";
+        if (this.getMCode() != null)
+            s= s + this.getMCode() + " | ";
 
         if (this.getMessage() != null)
             s= s + "Msg: " + this.getMessage() + " | ";
 
-        //if (this.getBenchmarkingTime() != null)
-            s= s + "ExecTime: " + this.getBenchmarkingTime() + " | ";
+        //if (this.getExecutionTime() != null)
+            s= s + "ExecTime: " + this.getExecutionTime() + " | ";
 
         if (this.getResultObject() != null)
             s= s + this.getResultObject();
@@ -305,19 +296,75 @@ public class TResult<T> implements TStringSerializeModifier<TResult> {
     }
 
 
+    public TException getException() {
+        return exception;
+    }
 
 
+    public TExceptionDescriptor[] getExceptionChain() {
+        return exceptionChain;
+    }
+
+    public void setExceptionChain(TExceptionDescriptor[] exceptionChain) {
+        this.exceptionChain = exceptionChain;
+    }
 
 
 
 
     @Override
-    public String onAfterSerialize(Object object, String s) throws Exception {
-        return null;
+    public void onBeforeSerialize() throws TException {
+
+        this.code= this.mCode.toString();
+        Throwable e= this.exception;
+        if (e == null)
+            return;
+
+        Throwable[] throwables= e.getSuppressed();
+        /*LinkedList<Throwable> exceptionsList= new LinkedList<>();
+        while (e != null){
+            exceptionsList.add(e);
+            e= e.getCause();
+        }
+        this.exceptionChain= new TExceptionDescriptor[exceptionsList.size()];
+        for (Throwable throwable: exceptionsList)
+            this.exceptionChain[i]= exceptionsList.get()
+        */
+
+        this.exceptionChain= new TExceptionDescriptor[throwables.length];
+        for (int i= 0; i < throwables.length; i++){
+            this.exceptionChain[i]= new TExceptionDescriptor(throwables[i]);
+        }
+
     }
 
     @Override
-    public void onAfterDeserialize(String s, Class<TResult> mainClass, Class[] genericParams, TResult object) throws Exception {
+    public void onAfterDeserialize() throws TException {
 
+        //ToDo: remove in further versions
+        if (this.resultCode != null){
+            this.mCode= TBaseMCode.valueOf(this.resultCode);
+            this.executionTime= this.benchmarkingTime;
+            return;
+        }
+
+
+        this.mCode= TMCodeRegistry.fetch(this.code);
+
+        if (this.exceptionChain != null)
+        for (TExceptionDescriptor exceptionDescriptor: this.exceptionChain){
+            exceptionDescriptor.setmCode(TMCodeRegistry.fetch(exceptionDescriptor.getCode()));
+        }
+    }
+
+
+
+
+    public boolean isRemoteOrigin() {
+        return remoteOrigin;
+    }
+
+    public void setRemoteOrigin(boolean remoteOrigin) {
+        this.remoteOrigin = remoteOrigin;
     }
 }

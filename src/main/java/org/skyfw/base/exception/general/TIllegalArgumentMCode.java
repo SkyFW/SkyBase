@@ -8,6 +8,8 @@ public enum TIllegalArgumentMCode implements TMCode {
 
 
     ARGUMENT_MUST_BE_NUMERIC
+    , ARGUMENT_MUST_BE_A_NUMERIC_CLASS
+    , STRING_ARGUMENT_MUST_BE_CONVERTABLE_TO_NUMERIC
     ;
 
 

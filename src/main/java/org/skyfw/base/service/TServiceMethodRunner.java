@@ -6,7 +6,7 @@ import org.skyfw.base.result.TResult;
 //It Seems Generics Can't Be Useful In This Case Because It's a Run Time Matter
 public interface TServiceMethodRunner  {
 
-    TResult run(TRequestMetaData requestMetaData
+    TResult run(TServiceRequestSession requestMetaData
             , TDataModel request
             , TDataModel response
             , TServiceMethod serviceMethod);
