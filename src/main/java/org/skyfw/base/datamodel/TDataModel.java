@@ -8,13 +8,12 @@ import org.skyfw.base.exception.TException;
 import org.skyfw.base.exception.general.TIllegalArgumentException;
 import org.skyfw.base.log.TLogger;
 import org.skyfw.base.mcodes.TMCodeSeverity;
-import org.skyfw.base.service.TServiceMethodParam;
 
 import java.io.Serializable;
 import java.util.*;
 
 
-public interface TDataModel extends TServiceMethodParam, Serializable, Map<String, Object> {
+public interface TDataModel extends Serializable, Map<String, Object> {
 
     static final TLogger logger= TLogger.getLogger();
 

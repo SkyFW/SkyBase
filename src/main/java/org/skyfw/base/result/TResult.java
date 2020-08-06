@@ -267,7 +267,7 @@ public class TResult<T> implements TDeserializeEventListener, TSerializeEventLis
 
         TMCode mCode= this.getMCode();
         if (mCode != null)
-            return this.mCode.getRawMessage();
+            return mCode.getRawMessage();
         else
             return "";
     }
@@ -320,20 +320,20 @@ public class TResult<T> implements TDeserializeEventListener, TSerializeEventLis
         if (e == null)
             return;
 
-        Throwable[] throwables= e.getSuppressed();
-        /*LinkedList<Throwable> exceptionsList= new LinkedList<>();
-        while (e != null){
+        Throwable[] throwables= null;/*e.getSuppressed();*/
+        LinkedList<Throwable> exceptionsList= new LinkedList<>();
+        while ((e != null)){
             exceptionsList.add(e);
-            e= e.getCause();
+            if (e == e.getCause())
+                break;
+            e = e.getCause();
         }
-        this.exceptionChain= new TExceptionDescriptor[exceptionsList.size()];
-        for (Throwable throwable: exceptionsList)
-            this.exceptionChain[i]= exceptionsList.get()
-        */
 
-        this.exceptionChain= new TExceptionDescriptor[throwables.length];
-        for (int i= 0; i < throwables.length; i++){
-            this.exceptionChain[i]= new TExceptionDescriptor(throwables[i]);
+        this.exceptionChain= new TExceptionDescriptor[exceptionsList.size()];
+        int i= 0;
+        for (Throwable throwable: exceptionsList) {
+            this.exceptionChain[i] = new TExceptionDescriptor(throwable);
+            i ++;
         }
 
     }

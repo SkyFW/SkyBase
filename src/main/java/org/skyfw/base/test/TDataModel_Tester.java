@@ -31,7 +31,7 @@ public class TDataModel_Tester {
         gdataDataModel.set("userId", "220");
 
         try {
-            json = gdataDataModel.serializeToString(TGsonAdapter.class);
+            json = TSerializer.serializeToString(gdataDataModel, TGsonAdapter.class);
             gdataDataModel = TSerializer.deserializeFromString(json, TGsonAdapter.class, TGenericDataModel.class);
         } catch (TException e) {
 

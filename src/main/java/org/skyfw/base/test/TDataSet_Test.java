@@ -140,12 +140,12 @@ public class TDataSet_Test {
 
         try {
             TGenericResponse response = TGenericResponse.createTResponse(true);
-            response.setValue("dataSet", dataSet);
+            response.set("dataSet", dataSet);
             String s = response.serializeToString(TGsonAdapter.class);
 
             TGenericResponse response2 = TGenericResponse.createTResponse(true);
             response2.deserializeFromString(s, TGsonAdapter.class);
-            System.out.println(response.getSize());
+            System.out.println(response.size());
         }catch (TException e){
             return false;
         }

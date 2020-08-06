@@ -5,7 +5,7 @@ import org.skyfw.base.serializing.TSerializable;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TGenericDataModel extends ConcurrentHashMap<String, Object>
-        implements TDataModel ,TSerializable<TGenericDataModel>{
+        implements TDataModel {
 
 
     //PerInstance Value Container

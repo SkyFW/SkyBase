@@ -1,11 +1,10 @@
 package org.skyfw.base.service;
 
-public class TRequestMetaData<D> {
+public class TRequestMetaData {
 
-    private String securityToken;
-    private String requestPath;
-    private transient String[] parsedRequestPath;
-    private transient D detail;
+    protected String securityToken;
+    protected String requestPath;
+    protected transient String[] parsedRequestPath;
 
 
 
@@ -57,11 +56,5 @@ public class TRequestMetaData<D> {
         return this.parsedRequestPath[0];
     }
 
-    public D getDetail() {
-        return detail;
-    }
 
-    public void setDetail(D detail) {
-        this.detail = detail;
-    }
 }

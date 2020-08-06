@@ -124,11 +124,11 @@ public class TDataModelInitiator {
 
         //Setting Fields Descriptors
         //--------------------------
+        boolean keyFieldFound= false;
 
         Field[] fields = currentClass.getDeclaredFields();
         for (Field field : fields) {
             try {
-
                 // >>> Ignoring ignored fields !
                 IgnoredField ignoredFieldAnnotation = field.getAnnotation(IgnoredField.class);
                 if (ignoredFieldAnnotation != null)
@@ -157,10 +157,21 @@ public class TDataModelInitiator {
                 // >>> Check if this is the "Key Field"
                 KeyField keyFieldAnnotation = field.getAnnotation(KeyField.class);
                 if (keyFieldAnnotation != null) {
-                    fieldDescriptor.setKeyField(true);
-                    if ( ! TObjects.nullOrEmpty(this.dataModelDescriptor.getKeyFieldName()))
-                        logger.warn("Multiple key fields makes no sense!\nData Model: " + this.dataModelClass.getName());
+                    if (keyFieldFound){
+                        logger.warn("Multiple key fields makes no sense so simply ignored !\n"
+                                + "Data Model: " + this.dataModelClass.getName());
+                        continue;
+                    }
 
+                    if ( ! TObjects.nullOrEmpty(this.dataModelDescriptor.getKeyFieldName())) {
+                        TFieldDescriptor previousKeyFieldDescriptor=
+                                this.dataModelDescriptor.fields.get(this.dataModelDescriptor.getKeyFieldName());
+                        previousKeyFieldDescriptor.setKeyField(false);
+                        logger.trace("Data model key field updated: " + this.dataModelClass.getName());
+                    }
+
+                    keyFieldFound= true;
+                    fieldDescriptor.setKeyField(true);
                     this.dataModelDescriptor.setKeyFieldName(fieldDescriptor.getFieldName());
                 }
 

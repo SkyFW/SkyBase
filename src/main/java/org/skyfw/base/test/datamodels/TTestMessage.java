@@ -31,6 +31,8 @@ public class TTestMessage extends TBaseDataModel {
     @DataModelField
     private Long editTime;
 
+    private String[] params;
+
 
 
     public String getMessageId() {
@@ -71,5 +73,14 @@ public class TTestMessage extends TBaseDataModel {
 
     public void setMessageGroup(String messageGroup) {
         this.messageGroup = messageGroup;
+    }
+
+
+    public String[] getParams() {
+        return params;
+    }
+
+    public void setParams(String[] params) {
+        this.params = params;
     }
 }

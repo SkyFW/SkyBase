@@ -10,17 +10,13 @@ import org.skyfw.base.datamodel.*;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.init.TBaseInitiator;
 import org.skyfw.base.log.TLogger;
-import org.skyfw.base.mcodes.TMCodeSeverity;
-import org.skyfw.base.result.TResult;
 import org.skyfw.base.serializing.TGenericType;
 import org.skyfw.base.security.TDataAccessType;
 import org.skyfw.base.serializing.TSerializable;
 import org.skyfw.base.serializing.TSerializer;
 import org.skyfw.base.serializing.adapters.json.gson.TGsonAdapter;
-import org.skyfw.base.service.TServiceRequestSession;
-import org.skyfw.base.service.TResponseMetaData;
 import org.skyfw.base.service.TService;
-import org.skyfw.base.service.TServiceMethod;
+import org.skyfw.base.service.method.TServiceMethod;
 import org.skyfw.base.system.classloader.TClassLoader;
 import org.skyfw.base.system.file.TFileUtils;
 import org.skyfw.base.system.TSystemUtils;
@@ -29,7 +25,6 @@ import org.skyfw.base.system.terminal.TTerminalTextColor;
 import org.skyfw.base.test.datamodels.TTestUser;
 import org.skyfw.base.serializing.adapters.json.gson.TGsonUtils;
 import org.skyfw.base.system.reflection.TInterfaceProxy;
-import org.skyfw.base.mcodes.TBaseMCode;
 
 import java.io.File;
 import java.lang.reflect.*;
@@ -80,6 +75,14 @@ public class TTest {
 
 
         try {
+
+            logger.traceBegin("Testing TObjectSerializer...");
+            if (TSerializer_UnitTest.doTest())
+                logger.trace("Testing TObjectSerializer Finished Successfully");
+            else
+                logger.fatal("Testing TObjectSerializer Failed");
+
+
             TDataSet_Test.doTest();
             TThreadPool_Tester.doTest();
 
@@ -108,8 +111,8 @@ public class TTest {
             result.getDetails().put("Name", "dfgdfg");
             String json = responseMetaData.serializeToString(TGsonAdapter.class);
 
-            TResponseMetaData responseMetaData2=
-                    TSerializer.deserializeFromString(json, TGsonAdapter.class, TResponseMetaData.class);
+            TServiceResponse responseMetaData2=
+                    TSerializer.deserializeFromString(json, TGsonAdapter.class, TServiceResponse.class);
             System.out.println(responseMetaData2);*/
 
 
@@ -200,40 +203,6 @@ public class TTest {
             };
             System.out.println(service.getFullPath());
 
-            TServiceMethod serviceMethod = new TServiceMethod() {
-                @Override
-                public String getMethodName() {
-                    return "TestMethod";
-                }
-
-                @Override
-                public Class<? extends TService> getParentServiceClass() {
-                    return service.getClass();
-                }
-
-                @Override
-                public TService getParentService() {
-                    return service;
-                }
-
-                @Override
-                public Class getRequestClass() {
-                    return null;
-                }
-
-                @Override
-                public Class getResponseClass() {
-                    return null;
-                }
-
-                @Override
-                public String getMethodDescription() {
-                    return null;
-                }
-            };
-
-            System.out.println(serviceMethod.getFullPath());
-
 
             TJsonUtils_Tester.doTest();
 
@@ -241,9 +210,7 @@ public class TTest {
 
             TInterfaceProxy.main(null);
 
-            TServiceRequestSession requestMetaData = new TServiceRequestSession();
-            requestMetaData.setRequestPath("/AAA/BBB");
-            requestMetaData.getRequestPath();
+
 
 
         /*try {
@@ -448,11 +415,7 @@ public class TTest {
             clazz = TClassLoader.loadByName("TDataModel");
 
 
-            logger.traceBegin("Testing TObjectSerializer...");
-            if (TSerializable_Tester.doTest())
-                logger.trace("Testing TObjectSerializer Finished Successfully");
-            else
-                logger.fatal("Testing TObjectSerializer Failed");
+
 
 
             System.out.println("Starting TDataModel_Tester");

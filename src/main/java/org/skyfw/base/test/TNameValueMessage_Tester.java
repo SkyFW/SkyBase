@@ -43,10 +43,10 @@ public class TNameValueMessage_Tester {
 
             }
 
-            nameValueMessage1.setValue("User", testUser);
+            nameValueMessage1.set("User", testUser);
 
             TDataSet dataSet = new TDataSet(new TTestUser[]{testUser});
-            nameValueMessage1.setValue("UserDS", dataSet);
+            nameValueMessage1.set("UserDS", dataSet);
 
 
             String s = nameValueMessage1.serializeToString(TGsonAdapter.class);

@@ -43,12 +43,12 @@ public class TRequestResponse_Tester {
 
         try {
 
-            TGenericRequest request1 = TGenericRequest.createTRequest(true);
+            TGenericRequest request1 = new TGenericRequest(true);
             TGenericRequest request2 = null;
 
             TResult result = TResultBuilder.getTResultBuilder().setResultCode(TBaseMCode.SUCCESS).createTResult();
 
-            request1.setkeepDataTypesInSerializing(true);
+            request1.setKeepDataTypesInSerializing(true);
 
         /*
         TTestSimpleUser simpleUser= new TTestSimpleUser();
@@ -62,9 +62,8 @@ public class TRequestResponse_Tester {
         */
 
 
-            request1.setServiceName("DataStore_Service");
-            request1.setMethodName("Update");
-            request1.setValue("TestName", "TestValue");
+
+            request1.set("TestName", "TestValue");
 
             String json = null;
 
@@ -73,8 +72,7 @@ public class TRequestResponse_Tester {
             // req.getSerializer().serializeToString(TStringSerializerLib.GSON_JSON_ENCODER);
             //system.out.println(json);
 
-            request2 = TGenericRequest.createFromString(true, json);
-            System.out.println(request2.getSecurityToken());
+
 
             return testDeserializingUnknownDataTypes(json);
 
@@ -94,7 +92,7 @@ public class TRequestResponse_Tester {
     public static boolean testDeserializingUnknownDataTypes(String json){
         try {
             TResult result;
-            TGenericRequest request2 = TGenericRequest.createTRequest(true);
+            TGenericRequest request2 = new TGenericRequest(true);
 
             json.replace("String", "XString");
             // >>> Invalidating the existing JSON
@@ -120,18 +118,17 @@ public class TRequestResponse_Tester {
             TGenericResponse res1 = TGenericResponse.createTResponse(true);
 
             TResult result = TResultBuilder.getTResultBuilder().setResultCode(TBaseMCode.AUTHENTICATION_FAILED).createTResult();
-            res1.setResult(result);
-            res1.setValue("userName", "user1");
-            res1.setValue("userCode", "ertertertert");
+            res1.set("userName", "user1");
+            res1.set("userCode", "ertertertert");
 
-            res1.setkeepDataTypesInSerializing(true);
+            res1.setKeepDataTypesInSerializing(true);
             //res1.setServiceName("DataStore_Service");
             //res1.setMethodName("Update");
             String json = res1.serializeToString(TGsonAdapter.class);
             // req.getSerializer().serializeToString(TStringSerializerLib.GSON_JSON_ENCODER);
             //system.out.println(json);
 
-            TGenericResponse res2 = TGenericResponse.createFromString(true, json, TGsonAdapter.class);
+            TGenericResponse res2 = new TGenericResponse(true);
             //res2.setDataTypes(res1.getDataTypes());
             res2.deserializeFromString(json, TGsonAdapter.class);
 

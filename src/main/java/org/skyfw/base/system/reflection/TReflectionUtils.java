@@ -31,7 +31,7 @@ public class TReflectionUtils {
         Class[] realTypes= method.getParameterTypes();
 
         for (int i= 0; i< realTypes.length; i++)
-            if (realTypes[i].equals(expectedTypes[i]))
+            if ( ! realTypes[i].equals(expectedTypes[i]))
                 return false;
 
         return true;

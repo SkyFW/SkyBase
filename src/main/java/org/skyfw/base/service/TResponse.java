@@ -1,20 +1,19 @@
 package org.skyfw.base.service;
 
 import org.skyfw.base.datamodel.TDataModel;
-import org.skyfw.base.serializing.TSerializable;
 
 public class TResponse<T extends TDataModel> {
 
 
-    private TResponseMetaData responseMetaData;
+    private TServiceResponse responseMetaData;
     private T response;
 
 
-    public TResponseMetaData getResponseMetaData() {
+    public TServiceResponse getResponseMetaData() {
         return responseMetaData;
     }
 
-    public void setResponseMetaData(TResponseMetaData responseMetaData) {
+    public void setResponseMetaData(TServiceResponse responseMetaData) {
         this.responseMetaData = responseMetaData;
     }
 

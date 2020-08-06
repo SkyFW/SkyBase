@@ -2,6 +2,7 @@ package org.skyfw.base.service;
 
 
 import org.skyfw.base.log.TLogger;
+import org.skyfw.base.service.method.TServiceMethodInfo;
 
 import java.util.concurrent.ConcurrentHashMap;
 

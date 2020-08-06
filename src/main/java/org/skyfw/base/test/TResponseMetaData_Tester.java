@@ -3,9 +3,6 @@ package org.skyfw.base.test;
 import org.skyfw.base.exception.TException;
 import org.skyfw.base.exception.general.TIllegalArgumentException;
 import org.skyfw.base.mcodes.TBaseMCode;
-import org.skyfw.base.mcodes.TMCodeSeverity;
-import org.skyfw.base.serializing.adapters.json.gson.TGsonAdapter;
-import org.skyfw.base.service.TResponseMetaData;
 
 public class TResponseMetaData_Tester {
 
@@ -18,7 +15,7 @@ public class TResponseMetaData_Tester {
             TIllegalArgumentException illegalArgumentException= new TIllegalArgumentException(
                     TBaseMCode.LOCAL_ARGS_CHECK_FAILED, "var1");
 
-           /* TResponseMetaData responseMetaData= new TResponseMetaData(illegalArgumentException);
+           /* TServiceResponse responseMetaData= new TServiceResponse(illegalArgumentException);
             String json= responseMetaData.serializeToString(TGsonAdapter.class);
             responseMetaData.deserializeFromString(json, TGsonAdapter.class);*/
         }

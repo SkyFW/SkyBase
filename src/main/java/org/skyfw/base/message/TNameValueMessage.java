@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.skyfw.base.datamodel.TDataModel;
 import org.skyfw.base.datamodel.TDataSet;
-import org.skyfw.base.exception.TException;
+import org.skyfw.base.datamodel.TGenericDataModel;
 import org.skyfw.base.exception.general.TIllegalArgumentException;
 import org.skyfw.base.log.TLogger;
 import org.skyfw.base.pool.exception.TObjectPoolException;
@@ -30,78 +30,53 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 
-public class TNameValueMessage implements Serializable, TSerializable<TNameValueMessage> {
+public class TNameValueMessage extends TGenericDataModel
+        implements TDataModel, Serializable, TSerializable<TNameValueMessage> {
 
     TLogger logger= TLogger.getLogger();
 
-    //public HashMap<String, TJsonObjectContainer> values;
-    public HashMap<String, Object> values;
 
     //Java Native Serialization Do Not Need Keeping "dataTypes" As Data Because It Will Save This As MetaData
     //In Fact The original class and package names are encoded along with the data
     //and the incoming value is constructed as that class, so, to avoid a class cast exception,
     // what you cast it to must be identical
     private HashMap<String, String> dataTypes;
+    protected boolean keepDataTypesInSerializing;
 
 
     public TNameValueMessage(boolean keepDataTypesInSerializing) {
         this.keepDataTypesInSerializing = keepDataTypesInSerializing;
-
-        values = new HashMap<String, Object>();
 
         if (keepDataTypesInSerializing)
             dataTypes = new HashMap<String, String>();
     }
 
 
-
-    protected boolean keepDataTypesInSerializing;
-
-    public void setValue(String name, Object obj) {
-
-        //TJsonObjectContainer jsonObjectContainer = new TJsonObjectContainer();
-        //jsonObjectContainer.className = obj.getClass().getName();
-        //jsonObjectContainer.jsonObj = new Gson().toJson(obj);
-        //values.put(name, jsonObjectContainer);
-        values.put(name, obj);
+    @Override
+    public Object set(String fieldName, Object value) {
 
         String className;
         if (keepDataTypesInSerializing){
-            if (obj.getClass().equals(TDataSet.class)) {
-                Class<? extends TDataModel> genericClass= ((TDataSet) obj).getDataModelClass();
+            if (value.getClass().equals(TDataSet.class)) {
+                Class<? extends TDataModel> genericClass= ((TDataSet) value).getDataModelClass();
                 String genericClassName= "";
                 if (genericClass != null)
                     genericClassName= genericClass.getName();
-                className = obj.getClass().getName() + "<" + genericClassName + ">";
+                className = value.getClass().getName() + "<" + genericClassName + ">";
             }
             else
-                className= obj.getClass().getName();
-            dataTypes.put(name, className);
+                className= value.getClass().getName();
+            dataTypes.put(fieldName, className);
         }
+
+        return super.set(fieldName, value);
     }
 
-
-    public Object getValue(String name) {
-        if (values.containsKey(name)) {
-          //  TJsonObjectContainer jsonObjectContainer = values.get(name);
-            try {
-
-                return this.values.get(name);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else
-            System.out.println("");//TLogger.warn();
-
-
-        return null;
-    }
 
     public <T> T tryGetValue(String name, Class<T> type) {
         
         try {
-            return type.cast(this.getValue(name));
+            return type.cast(this.get(name));
         } catch (Exception e){
             return null;
         }
@@ -114,23 +89,13 @@ public class TNameValueMessage implements Serializable, TSerializable<TNameValue
         return keepDataTypesInSerializing;
     }
 
-    public void setkeepDataTypesInSerializing(boolean keepDataTypesInSerializing) {
+    public void setKeepDataTypesInSerializing(boolean keepDataTypesInSerializing) {
         this.keepDataTypesInSerializing = keepDataTypesInSerializing;
     }
 
-    public HashMap<String, String> getDataTypes() {
-        return dataTypes;
-    }
-
-    public void setDataTypes(HashMap<String, String> dataTypes) {
-        this.dataTypes = dataTypes;
-    }
 
 
-    public void removeValue(String name, Object obj) {
 
-
-    }
 
 
 
@@ -157,7 +122,7 @@ public class TNameValueMessage implements Serializable, TSerializable<TNameValue
                 JsonNode rootNode = objectMapper.createObjectNode();
                 //
                 //((ObjectNode) rootNode).fi
-                ((ObjectNode) rootNode).putPOJO("Values", this.values);
+                ((ObjectNode) rootNode).putPOJO("Values", this);
                 //
                 ((ObjectNode) rootNode).putPOJO("DataTypes", this.dataTypes);
                 //Logically Is Not Necessary To Remove Because It Not Exist !!!
@@ -190,7 +155,7 @@ public class TNameValueMessage implements Serializable, TSerializable<TNameValue
         LinkedList<String> undefinedClasses = new LinkedList<String>();
 
         //Clear Previous Values If Exists
-        this.values.clear();
+        this.clear();
 
         //Get a TJacksonObjectMapper From Pool
         TJacksonObjectMapper objectMapper = TJacksonObjectMapperPool.getFromPool(1000);
@@ -271,7 +236,7 @@ public class TNameValueMessage implements Serializable, TSerializable<TNameValue
                     }
 
                     if (obj != null)
-                        this.values.put(currentKey, obj);
+                        this.put(currentKey, obj);
                 }
 
             } catch (Exception e) {

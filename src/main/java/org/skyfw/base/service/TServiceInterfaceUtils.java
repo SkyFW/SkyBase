@@ -1,12 +1,13 @@
 package org.skyfw.base.service;
 
 import org.skyfw.base.datamodel.TDataModel;
-import org.skyfw.base.exception.TException;
 import org.skyfw.base.exception.general.TIllegalArgumentException;
 import org.skyfw.base.exception.general.TNullArgException;
 import org.skyfw.base.log.TLogger;
 import org.skyfw.base.service.exception.TServiceInformationRetrievalException;
-import org.skyfw.base.service.mcode.TServiceMCodes;
+import org.skyfw.base.service.method.TServiceMethod;
+import org.skyfw.base.service.method.TServiceMethodInfo;
+import org.skyfw.base.service.method.TServiceMethodInfoProvider;
 import org.skyfw.base.system.reflection.TInterfaceProxy;
 
 /**
@@ -18,8 +19,8 @@ import org.skyfw.base.system.reflection.TInterfaceProxy;
 public class TServiceInterfaceUtils {
     static TLogger logger= TLogger.getLogger();
 
-    public static <Q extends TDataModel,S extends TDataModel, T extends TServiceMethod<Q,S>>
-    TServiceMethodInfo <Q,S> getServiceMethodInfoByClass(Class<T> serviceMethodClazz) throws TServiceInformationRetrievalException{
+    public static <Q extends TDataModel,S extends TDataModel, T extends TServiceMethodInfoProvider<Q,S>>
+    TServiceMethodInfo<Q,S> getServiceMethodInfoByClass(Class<T> serviceMethodClazz) throws TServiceInformationRetrievalException{
         try {
             T serviceMethodObj = TInterfaceProxy.getProxyInstance(serviceMethodClazz);
             TServiceMethodInfo <Q,S> serviceMethodInfo=
@@ -29,7 +30,7 @@ public class TServiceInterfaceUtils {
         }catch (Exception e){
             logger.warn("exception In Generating Instance From service Method", e);
            throw TServiceInformationRetrievalException.create(
-                   TServiceMCodes.EXCEPTION_IN_GENERATING_INSTANCE_FROM_SERVICE_METHOD_CLASS
+                   TServiceMCode.EXCEPTION_IN_GENERATING_INSTANCE_FROM_SERVICE_METHOD_CLASS
                    , serviceMethodClazz
                    , e);
         }
@@ -38,33 +39,22 @@ public class TServiceInterfaceUtils {
 
 
 
-    public static <Q extends TDataModel,S extends TDataModel, T extends TServiceMethod<Q,S>>
+    public static <Q extends TDataModel,S extends TDataModel, T extends TServiceMethodInfoProvider<Q,S>>
     TServiceMethodInfo <Q,S> getServiceMethodInfoByObject(T serviceMethodObj)
             throws TServiceInformationRetrievalException, TIllegalArgumentException {
 
         if (serviceMethodObj == null)
-            throw new TNullArgException(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceMethodObj");
+            throw new TNullArgException(TServiceMCode.SERVICE_INSTANCE_IS_NULL, "serviceMethodObj");
 
-        //TException.create(TServiceMCodes.SERVICE_METHOD_INSTANCE_IS_NULL, null, e);
+        //TException.create(TServiceMCode.SERVICE_METHOD_INSTANCE_IS_NULL, null, e);
 
-        TServiceMethodInfo<Q,S> serviceMethodInfo= new TServiceMethodInfo<Q,S>();
-
+        TServiceMethodInfo<Q,S> serviceMethodInfo;
         try {
-            serviceMethodInfo.setMethodName(serviceMethodObj.getMethodName());
-            serviceMethodInfo.setFullPath(serviceMethodObj.getFullPath());
-
-            serviceMethodInfo.setRequestClass(serviceMethodObj.getRequestClass());
-            serviceMethodInfo.setRequestGenericParams(serviceMethodObj.getRequestGenericParams());
-
-            serviceMethodInfo.setResponseClass(serviceMethodObj.getResponseClass());
-            serviceMethodInfo.setResponseGenericParams(serviceMethodObj.getResponseGenericParams());
-
-            serviceMethodInfo.setMethodDescription(serviceMethodObj.getMethodDescription());
+            serviceMethodInfo= serviceMethodObj.getMethodInfo();
             return serviceMethodInfo;
-
         }catch (Exception e){
             throw TServiceInformationRetrievalException.create(
-                    TServiceMCodes.EXCEPTION_ON_GETTING_INFO_FROM_SERVICE_METHOD_OBJECT
+                    TServiceMCode.EXCEPTION_ON_GETTING_INFO_FROM_SERVICE_METHOD_OBJECT
                     , serviceMethodObj.getClass()
                     , e);
         }
@@ -79,7 +69,7 @@ public class TServiceInterfaceUtils {
             throws TServiceInformationRetrievalException, TIllegalArgumentException {
 
         if (serviceClass == null)
-            throw new TNullArgException(TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceClass");
+            throw new TNullArgException(TServiceMCode.SERVICE_INSTANCE_IS_NULL, "serviceClass");
 
         try {
             TService serviceObj = TInterfaceProxy.getProxyInstance(serviceClass);
@@ -90,7 +80,7 @@ public class TServiceInterfaceUtils {
             logger.warn("exception In Generating Instance From service", e);
             e.printStackTrace();
             throw TServiceInformationRetrievalException.create(
-                    TServiceMCodes.EXCEPTION_IN_GENERATING_INSTANCE_FROM_SERVICE_CLASS
+                    TServiceMCode.EXCEPTION_IN_GENERATING_INSTANCE_FROM_SERVICE_CLASS
                     , serviceClass
                     , e);
         }
@@ -102,7 +92,7 @@ public class TServiceInterfaceUtils {
             throws TServiceInformationRetrievalException, TIllegalArgumentException{
 
         if (serviceObj == null)
-            throw new TNullArgException (TServiceMCodes.SERVICE_INSTANCE_IS_NULL, "serviceObj");
+            throw new TNullArgException (TServiceMCode.SERVICE_INSTANCE_IS_NULL, "serviceObj");
 
         TServiceInfo serviceInfo= new TServiceInfo();
         try{
@@ -111,7 +101,7 @@ public class TServiceInterfaceUtils {
             return serviceInfo;
         }catch (Exception e){
             throw TServiceInformationRetrievalException.create(
-                    TServiceMCodes.EXCEPTION_ON_GETTING_INFO_FROM_SERVICE_OBJECT
+                    TServiceMCode.EXCEPTION_ON_GETTING_INFO_FROM_SERVICE_OBJECT
                     , serviceObj.getClass());
         }
 

@@ -1,4 +1,4 @@
-package org.skyfw.base.service;
+package org.skyfw.base.service.method;
 
 @Deprecated
 public class TServiceMethodParameterDescriptor {

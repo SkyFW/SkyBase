@@ -23,6 +23,7 @@ import org.skyfw.base.serializing.exception.TSerializeException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -308,13 +309,22 @@ public class TGsonAdapter implements TJsonAdapter {
 
                         // >>> behaving normal
                         Class type= this.getCurrentTokenType();
-                        if (!Collection.class.isAssignableFrom(type))
-                            throw new RuntimeException("JSON_ARRAY_FOUND_BUT_REQUESTED_TYPE_IS_NOT_A_SET");
-
 
                         TItem item = new TItem();
                         item.name = currentItemName;
-                        item.value = new TDataSet();
+
+                        if (Collection.class.isAssignableFrom(type)) {
+                            item.value = new TDataSet();
+                            item.componentType = this.typeStack.pop();
+
+                        }
+                        else if (type.isArray()){
+                            item.value = new LinkedList<>();
+                            item.componentType = type.getComponentType();
+                        }
+                        else {
+                            throw new RuntimeException("JSON_ARRAY_FOUND_BUT_REQUESTED_TYPE_IS_NEITHER_A_COLLECTION_OR_ARRAY");
+                        }
                         itemStack.push(item);
 
                         jsonReader.beginArray();
@@ -324,11 +334,16 @@ public class TGsonAdapter implements TJsonAdapter {
                     //--------------------------------------------------------------------------------------------------
                     if ((JsonToken.END_OBJECT.equals(nextToken)) || (JsonToken.END_ARRAY.equals(nextToken))) {
 
-                        // >>>
+                        // >>> Ending a dataset or simple array
                         if (JsonToken.END_ARRAY.equals(nextToken)) {
-                            typeStack.pop();
                             jsonReader.endArray();
-                        }else {
+                            if ( ! (itemStack.peek().value instanceof TDataSet)) {
+                                Object[] emptyArr= (Object[]) Array.newInstance(itemStack.peek().componentType, 0);
+                                itemStack.peek().value = ((LinkedList) itemStack.peek().value).toArray(emptyArr);
+                            }
+                        }
+                        // >>> Ending an object
+                        else {
                             jsonReader.endObject();
                         }
 
@@ -440,17 +455,24 @@ public class TGsonAdapter implements TJsonAdapter {
             if (itemStack.isEmpty())
                 return typeStack.pop();
 
+            // >>> Check if the parent item is a simple array
+            if (itemStack.peek().componentType != null)
+                return itemStack.peek().componentType;
+
+            // >>> In case of parent item is neither a "DataModel" or a simple array
             if ((itemStack.peek().dataModelDescriptor== null))
                 return typeStack.peek();
 
+            // >>> In case of parent item is a "GenericDataModel"
             if ( TGenericDataModel.class.equals(itemStack.peek().value.getClass()))
                 return null;
 
+            // >>> In case of parent item is a "DataModel"
             TFieldDescriptor fieldDescriptor= itemStack.peek().dataModelDescriptor.fields.get(currentItemName);
             if (fieldDescriptor == null)
                 return null;
-
-            return itemStack.peek().dataModelDescriptor.fields.get(currentItemName).getType();
+            // >>> Finally in case of the requested field name is defined in parent "DataModel"
+            return fieldDescriptor.getType();
         }
 
 
@@ -482,6 +504,9 @@ public class TGsonAdapter implements TJsonAdapter {
             public String name= null;
             public Object value= null;
             public TDataModelDescriptor dataModelDescriptor= null;
+            // >>> In case of simple arrays or "TDataSet"
+            public Class componentType = null;
+            public TDataModelDescriptor componentDataModelDescriptor= null; // >>> For sake of performance
         }
 
 

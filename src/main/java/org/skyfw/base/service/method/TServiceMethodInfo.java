@@ -1,7 +1,8 @@
-package org.skyfw.base.service;
+package org.skyfw.base.service.method;
 
 import org.skyfw.base.datamodel.TBaseDataModel;
 import org.skyfw.base.datamodel.TDataModel;
+import org.skyfw.base.service.TService;
 
 public class TServiceMethodInfo <Q extends TDataModel, S extends TDataModel> extends TBaseDataModel {
 
@@ -12,6 +13,14 @@ public class TServiceMethodInfo <Q extends TDataModel, S extends TDataModel> ext
     private Class<S> responseClass;
     private Class[]  responseGenericParams;
     private String   methodDescription;
+
+    // >>> Run time filled info
+    private TService parentService;
+    /*private TMethodAuthorizer methodAuthorizer;*/
+
+    // >>> Generic Class Params
+    //Jackson: TypeFactory.constructParametricType(Class parametrized, Class... parameterClasses)
+    //GSON: objectType = TypeToken.getParameterized(clazz, genericClazz).getSeverity();
 
 
     public String getMethodName() {
@@ -68,5 +77,13 @@ public class TServiceMethodInfo <Q extends TDataModel, S extends TDataModel> ext
 
     public void setResponseGenericParams(Class[] responseGenericParams) {
         this.responseGenericParams = responseGenericParams;
+    }
+
+    public TService getParentService() {
+        return parentService;
+    }
+
+    public void setParentService(TService parentService) {
+        this.parentService = parentService;
     }
 }
