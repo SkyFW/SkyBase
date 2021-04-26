@@ -226,7 +226,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <!-- ☛ Last Check On: 2019/7/4 ☕ -->
-            <version>2.6</version>
+            <version>2.7</version>
         </dependency>
 
         <!-- Added To Get The Version Of This Module In RunTime -->
